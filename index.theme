@@ -1,0 +1,7 @@
+[theme]
+name=tendou
+version=1.0
+description=Tendou Theme
+engine=lightdm-webkit2-greeter
+url=index.html
+session=xfce
