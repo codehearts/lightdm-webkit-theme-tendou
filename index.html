@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="Tendou Theme" />
+		<meta name="author" content="Nate Hart" />
+		<title>Tendou Theme</title>
+		<link rel="stylesheet" href="css/main.css" />
+	</head>
+	<body>
+		<div id="login-card">
+			<figure id="profile-image">
+				<img src="images/default-avatar.png" />
+			</figure>
+
+			<h1 id="login-name" class="full-name">Poop</h1>
+
+			<form id="login-form">
+				<input type="hidden" id="user"></select>
+				<input id="password" type="password" tabindex="1" autofocus
+					v-model="password"
+					v-attr="disabled: !passwordPrompt"
+					v-el="password" />
+			</form>
+		</div>
+
+		<ul id="user-list">
+		</ul>
+
+		<div id="power-button">
+			<ul id="power-menu">
+				<li id="shutdown">Shut down</li>
+				<li id="reboot">Restart</li>
+				<li id="sleep">Sleep</li>
+			</ul>
+
+			<svg>
+				<path
+				d="m 24.015964,10.375044 0,15.644355 m -8.63626,-7.774287 c -1.851768,2.059308 -2.985177,4.789089 -2.985177,7.774287 0,6.401414 5.188141,11.605557 11.605473,11.605557 6.401368,0 11.605473,-5.188179 11.605473,-11.605557 0,-2.985198 -1.133409,-5.714979 -2.985177,-7.774287"
+				style="fill:none;stroke-width:1;stroke-linecap:round" />
+			</svg>
+		</div>
+
+		<script src="js/mock.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>

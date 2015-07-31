@@ -1,0 +1,218 @@
+* {
+	box-sizing: border-box;
+}
+
+::selection {
+	background-color: #334;
+	color: #fff;
+}
+
+body {
+	background-color: #f6efef;
+	background: url('../images/bg.jpg') no-repeat center fixed;
+	background-size: cover;
+	font-family: 'Source Sans Pro', sans-serif;
+	font-weight: 100;
+	color: #99a;
+}
+
+body:before {
+	background: rgba(255,255,255,0.25);
+	content: '';
+	pointer-events: none;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+input {
+	-webkit-appearance: none;
+	background: none;
+	box-shadow: 0 5px 10px rgba(0,0,0,0);
+	border: none;
+	outline: none;
+	padding: 0.25em 0.5em;
+	font-family: 'Source Sans Pro', sans-serif;
+	font-weight: 100;
+	color: #99a;
+	transition: all 0.5s ease;
+}
+
+input {
+	border: 1px solid #99a;
+	padding: 0 0.125ex;
+}
+
+input:focus {
+	background: rgba(255,255,255,0.25);
+}
+
+#login-card {
+	margin: 7.5em auto 0;
+}
+
+#profile-image {
+	opacity: 0;
+	margin: 0 auto;
+	width: 250px;
+
+	-webkit-animation-name: avatar_in;
+	-webkit-animation-iteration-count: 1;
+	-webkit-animation-timing-function: cubic-bezier(0,1.25,1.25,.3);
+	-webkit-animation-fill-mode: forwards;
+	-webkit-animation-delay: 0.5s;
+	-webkit-animation-duration: 0.75s;
+	animation-name: avatar_in;
+	animation-iteration-count: 1;
+	animation-timing-function: cubic-bezier(0,1.25,1.25,.3);
+	animation-fill-mode: forwards;
+	animation-delay: 0.5s;
+	animation-duration: 1s;
+}
+
+#profile-image > img {
+	-webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+	clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+	max-width: 100%;
+	display: block;
+}
+
+#login-name {
+	margin: 0.75em 0 0.25em;
+	text-align: center;
+	font-weight: 300;
+	font-size: 72px;
+}
+
+#login-form {
+	-webkit-flex: 3;
+}
+
+#user {
+	font-size: 10vh;
+	display: none;
+}
+
+#password {
+	margin: 0 auto;
+	display: block;
+	font-size: 4vh;
+	font-weight: 900;
+	width: 10em;
+}
+
+/* User List */
+
+#user-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	left: 1em;
+	bottom: 1em;
+}
+
+#user-list > li {
+	transition: all 0.35s ease;
+	padding: 0.25em 0.5em;
+	font-size: 1.5em;
+	cursor: pointer;
+}
+
+#user-list > li:hover,
+#user-list > .selected {
+	background: rgba(255,255,255,0.25);
+	color: #334;
+}
+
+#user-list > .selected {
+	cursor: default;
+}
+
+/* Power Options */
+
+#power-button {
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	right: 1em;
+	bottom: 1em;
+}
+
+#power-button:hover > #power-menu {
+	pointer-events: auto;
+	bottom: 48px;
+	opacity: 1;
+}
+
+#power-button > svg {
+	transition: all 0.25s ease;
+	background-size: contain;
+	display: block;
+	stroke: #99a;
+	height: 48px;
+	width: 48px;
+}
+
+#power-button:hover > svg {
+	background-color: rgba(255,255,255,0.25);
+	stroke: #334;
+}
+
+#power-menu {
+	transition: all 0.3s ease;
+	pointer-events: none;
+	bottom: 24px;
+	opacity: 0;
+
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	position: absolute;
+	background: rgba(255,255,255,0.25);
+	right: 0;
+	font-size: 1.5em;
+	width: 6em;
+}
+
+#power-menu > li {
+	transition: all 0.25s ease;
+	padding: 0.25em 0.5em;
+	text-align: right;
+	cursor: pointer;
+}
+
+#power-menu > li:hover {
+	background: rgba(255,255,255,0.25);
+	color: #334;
+}
+
+/* Animation */
+
+@-webkit-keyframes avatar_in {
+    0% {
+        -webkit-transform: translateY(-150px);
+        transform: translateY(-150px);
+		opacity: 0;
+    }
+    100% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+		opacity: 1;
+    }
+}
+
+@keyframes avatar_in {
+    0% {
+        -webkit-transform: translateY(-150px);
+        transform: translateY(-150px);
+		opacity: 0;
+    }
+    100% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+		opacity: 1;
+    }
+}
