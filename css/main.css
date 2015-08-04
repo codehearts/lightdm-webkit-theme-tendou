@@ -103,6 +103,90 @@ input:focus {
 	width: 10em;
 }
 
+/* Message Area */
+
+#message {
+	transition: all 0.35s ease;
+	margin: 1.25em auto 0;
+	text-align: center;
+	font-size: 36px;
+	font-weight: normal;
+	overflow: visible;
+	max-width: 600px;
+	color: #334;
+}
+
+#message.error {
+	color: #934;
+}
+
+#message.cleared {
+	opacity: 0;
+	height: 0;
+}
+
+/* Waiting/Loading Spinner */
+/* Based on code from Vineeth.TR at http://codepen.io/vineethtr/pen/GJpxoQ */
+
+.spinner {
+	margin: 1.25em auto 0;
+	position: relative;
+	color: #99a;
+	height: 64px;
+	width: 64px;
+}
+
+.spinner:after, .spinner:before {
+	border-radius: 100%;
+	box-shadow: 0 0 0 3px;
+	content: '';
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	margin: auto;
+	width: 10px;
+	height: 10px;
+	opacity: 0;
+	-webkit-animation: spinner-bubble 1.5s ease-out 0s infinite;
+	animation: spinner-bubble 1.5s ease-out 0s infinite;
+}
+
+.spinner:before {
+	-webkit-animation: spinner-bubble 1.5s ease-out 2s infinite;
+	animation: spinner-bubble 1.5s ease-out 2s infinite;
+}
+
+@-webkit-keyframes spinner-bubble {
+	from {
+		width: 10px;
+		height: 10px;
+		opacity: 0.75;
+	}
+
+	to {
+		width: 64px;
+		height: 64px;
+		opacity: 0;
+	}
+}
+
+@keyframes spinner-bubble {
+	from {
+		width: 10px;
+		height: 10px;
+		opacity: 0.75;
+	}
+
+	to {
+		width: 64px;
+		height: 64px;
+		opacity: 0;
+	}
+}
+
+
 /* User List */
 
 #user-list {
