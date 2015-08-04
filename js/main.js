@@ -205,8 +205,9 @@ var login = (function (lightdm) {
 		});
 
 		document.getElementById('login-form').addEventListener('submit', function (e) {
-			debug_msg('Form submitted');
 			e.preventDefault();
+
+			debug_msg('Form submitted');
 			window.provide_secret();
 		});
 
