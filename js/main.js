@@ -66,6 +66,9 @@ var login = (function (lightdm) {
 			userlist_entry.className = 'selected';
 		}
 
+		clear_message();
+		hide_loading();
+
 		if (lightdm._username) {
 			lightdm.cancel_authentication();
 		}
@@ -180,6 +183,12 @@ var login = (function (lightdm) {
 			lightdm.start_authentication(user.value);
 		}
 	};
+    window.show_error = function (e) {
+		console.log('Error: ' + e);
+    };
+    window.show_prompt = function (e) {
+		console.log('Prompt: ' + e);
+    };
 
 	// exposed outside of the closure
 	var init = function () {
@@ -196,8 +205,9 @@ var login = (function (lightdm) {
 		});
 
 		document.getElementById('login-form').addEventListener('submit', function (e) {
-			debug_msg('Form submitted');
 			e.preventDefault();
+
+			debug_msg('Form submitted');
 			window.provide_secret();
 		});
 
