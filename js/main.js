@@ -2,6 +2,7 @@ var login = (function (lightdm) {
 	var user = document.getElementById('user'),
 		pass = document.getElementById('password'),
 		user_list = document.getElementById('user-list'),
+		message = document.getElementById('message'),
 		default_avatar = 'images/default-avatar.png',
 		selected_user = null,
 		password = null,
@@ -114,6 +115,37 @@ var login = (function (lightdm) {
 		}
 	}
 
+	var show_message = function (text) {
+		message.innerHTML= text;
+		message.classList.remove('cleared');
+		message.classList.remove('error');
+	};
+
+	var show_error = function (text) {
+		show_message(text);
+		message.classList.add('error');
+	};
+
+	var clear_message = function () {
+		show_message('');
+		message.classList.add('cleared');
+	};
+
+	var show_loading = function () {
+		message.insertAdjacentHTML(
+			'afterend',
+			'<div class="spinner"></div>'
+		);
+	}
+
+	var hide_loading = function () {
+		var spinners = document.getElementsByClassName('spinner');
+
+		while (spinners[0]) {
+			spinners[0].parentNode.removeChild(spinners[0]);
+		}
+	}
+
 	// Functions that lightdm needs
 	window.start_authentication = function (username) {
 		lightdm.cancel_timed_login();
@@ -125,6 +157,9 @@ var login = (function (lightdm) {
 
 		if (password !== null) {
 			debug_msg('window.provide_secret() password not null');
+			clear_message();
+			show_loading();
+
 			lightdm.provide_secret(password);
 		}
 	};
@@ -135,6 +170,14 @@ var login = (function (lightdm) {
 				lightdm.authentication_user,
 				lightdm.default_session
 			);
+		} else {
+			show_error('Your password was incorrect');
+
+			pass.value = '';
+			pass.focus();
+			hide_loading();
+
+			lightdm.start_authentication(user.value);
 		}
 	};
 
@@ -160,16 +203,19 @@ var login = (function (lightdm) {
 
 		document.getElementById('shutdown').addEventListener('click', function (e) {
 			debug_msg('Shutting down');
+			show_message('Goodbye');
 			lightdm.shutdown();
 		});
 
 		document.getElementById('reboot').addEventListener('click', function (e) {
 			debug_msg('Restarting');
+			show_message('See you soon');
 			lightdm.restart();
 		});
 
 		document.getElementById('sleep').addEventListener('click', function (e) {
 			debug_msg('Sleeping');
+			show_message('Goodnight');
 			lightdm.suspend();
 		});
 	};
