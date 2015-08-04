@@ -183,6 +183,12 @@ var login = (function (lightdm) {
 			lightdm.start_authentication(user.value);
 		}
 	};
+    window.show_error = function (e) {
+		console.log('Error: ' + e);
+    };
+    window.show_prompt = function (e) {
+		console.log('Prompt: ' + e);
+    };
 
 	// exposed outside of the closure
 	var init = function () {
