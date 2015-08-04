@@ -66,6 +66,9 @@ var login = (function (lightdm) {
 			userlist_entry.className = 'selected';
 		}
 
+		clear_message();
+		hide_loading();
+
 		if (lightdm._username) {
 			lightdm.cancel_authentication();
 		}
