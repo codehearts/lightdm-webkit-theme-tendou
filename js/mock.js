@@ -18,8 +18,8 @@ if (typeof lightdm == 'undefined') {
     lightdm.can_shutdown = true;
 
     lightdm.users = [
-        { name: "clarkk", real_name: "Superman", display_name: "Clark Kent", image: "", language: "en_US", layout: null, session: "gnome", logged_in: false },
-        { name: "brucew", real_name: "Batman", display_name: "Bruce Wayne", image: "", language: "en_US", layout: null, session: "cinnamon", logged_in: false},
+        { name: "clarkk", real_name: "Superman", display_name: "Clark Kent", image: "http://uk.omg.li/VDXV/1756295270.jpg.x160.jpg", language: "en_US", layout: null, session: "gnome", logged_in: false },
+        { name: "brucew", real_name: "Batman", display_name: "Bruce Wayne", image: "http://uk.omg.li/VDHr/OW-blog-Batman.jpg", language: "en_US", layout: null, session: "cinnamon", logged_in: false},
         { name: "peterp", real_name: "Spiderman", display_name: "Peter Parker", image: "", language: "en_US", layout: null, session: "gnome", logged_in: true},
     ];
 
