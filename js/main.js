@@ -4,7 +4,8 @@ var login = (function (lightdm) {
 		user_list = document.getElementById('user-list'),
 		message = document.getElementById('message'),
 		default_avatar = 'images/default-avatar.png',
-		selected_user = null,
+		current_user_index = 0,
+		user_count = lightdm.users.length,
 		password = null,
 		debug = false;
 
@@ -48,6 +49,8 @@ var login = (function (lightdm) {
 	var select_user_from_list = function(idx) {
 		var idx = idx || 0;
 		var selected_user = lightdm.users[idx].name;
+
+		current_user_index = idx;
 
 		// Set this user as the user to log in
 		user.value = selected_user;
@@ -228,6 +231,21 @@ var login = (function (lightdm) {
 			show_message('Goodnight');
 			lightdm.suspend();
 		});
+
+		window.onkeyup = function(e) {
+			var key = e.keyCode ? e.keyCode : e.which;
+			var new_user_index;
+
+			if (key == 38) {        // Up
+				// Select the previous user in the list
+				new_user_index = ((current_user_index - 1) + user_count) % user_count;
+				select_user_from_list(new_user_index);
+			} else if (key == 40) { // Down
+				// Select the next user in the list
+				new_user_index = (current_user_index + 1) % user_count;
+				select_user_from_list(new_user_index);
+			}
+		}
 	};
 
 	return {
