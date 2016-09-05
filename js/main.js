@@ -1,3 +1,5 @@
+/*jshint camelcase: false */
+
 var login = (function(lightdm) {
 	var el_input_user   = document.getElementById('user'),            // User input field
 		el_input_pass   = document.getElementById('password')         // Password input field
