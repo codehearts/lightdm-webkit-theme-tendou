@@ -1,3 +1,4 @@
+/* exported Tendou */
 var Tendou = (function(lightdm) {
 	'use strict';
 
