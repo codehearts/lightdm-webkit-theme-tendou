@@ -1,6 +1,102 @@
 var Tendou = (function(lightdm) {
 	'use strict';
 
+	var Public = {
+		/**
+		 * Initializes the functionality for this theme.
+		 */
+		init: function() {
+			init_lightdm_handlers();
+			init_keypress_handler();
+
+			// DOM initializers
+			init_dom_elements();
+			init_dom_users_list();
+			init_dom_listeners();
+		},
+
+		/**
+		 * Returns the index of the current user.
+		 *
+		 * @return int The index of the current user in the LightDM user array.
+		 */
+		get_current_user_index: function() {
+			return current_user_index;
+		},
+
+		/**
+		 * Returns the index of the previous user.
+		 *
+		 * @return int The index of the previous user in the LightDM user array.
+		 */
+		get_previous_user_index: function() {
+			var previous_index = ((current_user_index - 1)+lightdm.num_users);
+			return previous_index % lightdm.num_users;
+		},
+
+		/**
+		 * Returns the index of the next user.
+		 *
+		 * @return int The index of the next user in the LightDM user array.
+		 */
+		get_next_user_index: function() {
+			return ((current_user_index + 1) % lightdm.num_users);
+		},
+
+		/**
+		 * Returns the full name for the user with the given id, if available.
+		 * If a full name is not available, their real name will be used.
+		 * If there is no real name, their username will be used.
+		 *
+		 * @param int user_index Index of the user in the LightDM user array.
+		 * @return string The full name for the user.
+		 */
+		get_full_name_from_index: function(user_index) {
+			var user = lightdm.users[user_index],
+				name;
+
+			if (user.display_name) {
+				name = user.display_name;
+			} else if (user.real_name) {
+				name = user.real_name;
+			} else {
+				name = user.name;
+			}
+
+			return name;
+		},
+
+		/**
+		 * Returns the path of the picture for the user with the given id.
+		 *
+		 * @param int user_index Index of the user in the LightDM user array.
+		 */
+		get_picture_from_index: function(user_index) {
+			var picture;
+
+			if (lightdm.users[user_index].image) {
+				picture = lightdm.users[user_index].image;
+			} else {
+				picture = default_avatar;
+			}
+
+			return picture;
+		},
+
+
+
+		/**
+		 * Private methods which are exposed for the purpose of testing.
+		 */
+		test_framework: {
+			init_lightdm_handlers:    init_lightdm_handlers,
+			init_keypress_handler:    init_keypress_handler,
+			set_current_user_index:   set_current_user_index,
+		},
+	};
+
+
+
 	/*
 	 *
 	 * Private properties
@@ -349,101 +445,6 @@ var Tendou = (function(lightdm) {
 		window.show_prompt = function() { /* do nothing */ };
 	}
 
-
-
-	var Public = {
-		/**
-		 * Initializes the functionality for this theme.
-		 */
-		init: function() {
-			init_lightdm_handlers();
-			init_keypress_handler();
-
-			// DOM initializers
-			init_dom_elements();
-			init_dom_users_list();
-			init_dom_listeners();
-		},
-
-		/**
-		 * Returns the index of the current user.
-		 *
-		 * @return int The index of the current user in the LightDM user array.
-		 */
-		get_current_user_index: function() {
-			return current_user_index;
-		},
-
-		/**
-		 * Returns the index of the previous user.
-		 *
-		 * @return int The index of the previous user in the LightDM user array.
-		 */
-		get_previous_user_index: function() {
-			var previous_index = ((current_user_index - 1)+lightdm.num_users);
-			return previous_index % lightdm.num_users;
-		},
-
-		/**
-		 * Returns the index of the next user.
-		 *
-		 * @return int The index of the next user in the LightDM user array.
-		 */
-		get_next_user_index: function() {
-			return ((current_user_index + 1) % lightdm.num_users);
-		},
-
-		/**
-		 * Returns the full name for the user with the given id, if available.
-		 * If a full name is not available, their real name will be used.
-		 * If there is no real name, their username will be used.
-		 *
-		 * @param int user_index Index of the user in the LightDM user array.
-		 * @return string The full name for the user.
-		 */
-		get_full_name_from_index: function(user_index) {
-			var user = lightdm.users[user_index],
-				name;
-
-			if (user.display_name) {
-				name = user.display_name;
-			} else if (user.real_name) {
-				name = user.real_name;
-			} else {
-				name = user.name;
-			}
-
-			return name;
-		},
-
-		/**
-		 * Returns the path of the picture for the user with the given id.
-		 *
-		 * @param int user_index Index of the user in the LightDM user array.
-		 */
-		get_picture_from_index: function(user_index) {
-			var picture;
-
-			if (lightdm.users[user_index].image) {
-				picture = lightdm.users[user_index].image;
-			} else {
-				picture = default_avatar;
-			}
-
-			return picture;
-		},
-
-
-
-		/**
-		 * Private methods which are exposed for the purpose of testing.
-		 */
-		test_framework: {
-			init_lightdm_handlers:    init_lightdm_handlers,
-			init_keypress_handler:    init_keypress_handler,
-			set_current_user_index:   set_current_user_index,
-		},
-	};
 
 
 	// Expose the public interface
