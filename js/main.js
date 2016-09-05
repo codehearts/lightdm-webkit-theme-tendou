@@ -121,7 +121,7 @@ var login = (function(lightdm) {
 	 */
 	var select_user_from_list = function(user_index) {
 		var selected_user_name = lightdm.users[user_index].name,
-			el_li_user_list_entry = document.getElementById('user-' + user_index);
+			el_li_user_list_entry = document.getElementById('user-'+user_index);
 
 		// Update the index of the current user globally
 		current_user_index = user_index;
@@ -136,8 +136,10 @@ var login = (function(lightdm) {
 		// Mark this user as selected if they have a list entry
 		if (el_li_user_list_entry) {
 			// Deselect all other users
-			Array.prototype.forEach.call(el_ul_user_list.getElementsByClassName('selected'), function(element) {
-				element.className = '';
+			Array.prototype.forEach.call(
+				el_ul_user_list
+					.getElementsByClassName('selected'), function(element) {
+						element.className = '';
 			});
 
 			el_li_user_list_entry.className = 'selected';
@@ -166,26 +168,29 @@ var login = (function(lightdm) {
 			user_index,
 			fullname;
 
-		for (user_index = 0; lightdm.num_users > 1 && user_index < lightdm.num_users; user_index++) {
-			if (lightdm.users.hasOwnProperty(user_index)) {
-				fullname = get_user_full_name(user_index);
+		if (lightdm.num_users > 1) {
+			for (user_index = 0; user_index < lightdm.num_users; user_index++) {
+				if (lightdm.users.hasOwnProperty(user_index)) {
+					fullname = get_user_full_name(user_index);
 
-				list.insertAdjacentHTML(
-					'beforeend',
-					'<li id="user-' + user_index + '">' + fullname + '</li>'
-				);
+					list.insertAdjacentHTML(
+						'beforeend',
+						'<li id="user-'+user_index+'">'+fullname+'</li>'
+					);
 
-				// Set an event handler to switch the user on click
-				(function(user_index) {
-					document.getElementById('user-' + user_index).addEventListener('click', function(e) {
-						e.preventDefault();
-						select_user_from_list(user_index);
-					});
-				} (user_index));
+					// Set an event handler to switch the user on click
+					(function(user_index) {
+						document.getElementById('user-'+user_index)
+							.addEventListener('click', function(e) {
+								e.preventDefault();
+								select_user_from_list(user_index);
+						});
+					} (user_index));
+				}
 			}
-		}
 
-		select_user_from_list(0); // Select the first user in the list
+			select_user_from_list(0); // Select the first user in the list
+		}
 	};
 
 
@@ -228,7 +233,7 @@ var login = (function(lightdm) {
 				lightdm.default_session
 			);
 		} else {
-			// Show an error message if the user was not successfully authenticated
+			// Show an error message if authentication was not successful
 			show_error('Your password was incorrect');
 
 			// Reset the password field and remove the wait indicator
@@ -268,30 +273,34 @@ var login = (function(lightdm) {
 		});
 
 		/* Authenticates with LightDM when the login form is submitted. */
-		document.getElementById('login-form').addEventListener('submit', function(e) {
-			e.preventDefault();
-			window.provide_secret();
+		document.getElementById('login-form')
+			.addEventListener('submit', function(e) {
+				e.preventDefault();
+				window.provide_secret();
 		});
 
 		/* Tell LightDM to shut down when the shutdown button is clicked. */
-		document.getElementById('shutdown').addEventListener('click', function(e) {
-			e.preventDefault();
-			show_message('Goodbye');
-			lightdm.shutdown();
+		document.getElementById('shutdown')
+			.addEventListener('click', function(e) {
+				e.preventDefault();
+				show_message('Goodbye');
+				lightdm.shutdown();
 		});
 
 		/* Tell LightDM to reboot when the reboot button is clicked. */
-		document.getElementById('reboot').addEventListener('click', function(e) {
-			e.preventDefault();
-			show_message('See you soon');
-			lightdm.restart();
+		document.getElementById('reboot')
+			.addEventListener('click', function(e) {
+				e.preventDefault();
+				show_message('See you soon');
+				lightdm.restart();
 		});
 
 		/* Tell LightDM to sleep when the sleep button is clicked. */
-		document.getElementById('sleep').addEventListener('click', function(e) {
-			e.preventDefault();
-			show_message('Goodnight');
-			lightdm.suspend();
+		document.getElementById('sleep')
+			.addEventListener('click', function(e) {
+				e.preventDefault();
+				show_message('Goodnight');
+				lightdm.suspend();
 		});
 
 		/**
@@ -303,12 +312,12 @@ var login = (function(lightdm) {
 
 			if (key == 38) {        // Up
 				// Select the previous user in the list
-				new_user_index = ((current_user_index - 1) + user_count);
-				new_user_index = new_user_index % user_count;
+				new_user_index = ((current_user_index - 1)+lightdm.num_users);
+				new_user_index = new_user_index % lightdm.num_users;
 				select_user_from_list(new_user_index);
 			} else if (key == 40) { // Down
 				// Select the next user in the list
-				new_user_index = (current_user_index + 1) % lightdm.num_users;
+				new_user_index = (current_user_index+1) % lightdm.num_users;
 				select_user_from_list(new_user_index);
 			}
 		};
