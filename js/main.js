@@ -1,150 +1,303 @@
-var login = (function (lightdm) {
-	var user = document.getElementById('user'),
-		pass = document.getElementById('password'),
-		user_list = document.getElementById('user-list'),
-		message = document.getElementById('message'),
-		default_avatar = 'images/default-avatar.png',
-		current_user_index = 0,
-		user_count = lightdm.users.length,
-		password = null,
-		debug = false;
+/* exported Tendou */
+var Tendou = (function(lightdm) {
+	'use strict';
 
-	// Private functions
-	var debug_msg = function(msg) {
-		if (debug) {
-			document.body.insertAdjacentHTML(
-				'beforeend',
-				'<p class="debug">DEBUG: '+msg+'</p>'
-			);
-		}
-	}
+	/*
+	 *
+	 * Private properties
+	 *
+	 */
 
-	var setup_users_list = function () {
-		debug_msg('setup_users_list() called');
+	var el_form_login_form   = null, // Login form
+		el_input_user        = null, // User input field
+		el_input_pass        = null, // Password input field
+		el_list_user_list    = null, // List of users
+		el_text_message      = null, // Messages to display to the user
+		el_heading_full_name = null, // Heading for the current user's full name
+		el_figure_profile    = null, // Container for the current user's picture
+		el_img_profile       = null, // Container for the current user's picture
+		el_button_shutdown   = null, // Shutdown button
+		el_button_restart    = null, // Restart button
+		el_button_sleep      = null, // Sleep button
+		current_user_index   = 0,    // Index of the currently selected user
+		default_avatar       = 'images/default-avatar.png';
 
-		var list = user_list;
-		for (var i = 0; lightdm.users.length > 1 && i < lightdm.users.length; i++) {
-			if (lightdm.users.hasOwnProperty(i)) {
-				var username = lightdm.users[i].name;
-				var fullname = get_user_full_name(lightdm.users[i]);
 
-				list.insertAdjacentHTML(
-					'beforeend',
-					'<li id="user-'+username+'">'+fullname+'</li>'
-				);
+	/*
+	 *
+	 * Public members
+	 *
+	 */
 
-				// Set an event handler to switch the user on click
-				(function(username, i) {
-					document.getElementById('user-'+username).addEventListener('click', function (e) {
-						debug_msg('Switching to user '+username);
-						select_user_from_list(i);
-					})
-				}(username, i));
+	var Public = {
+		/**
+		 * Initializes the functionality for this theme.
+		 */
+		init: function() {
+			init_lightdm_handlers();
+			init_keypress_handler();
 
-				debug_msg('User `'+username+'` found');
+			// DOM initializers
+			init_dom_elements();
+			init_dom_users_list();
+			init_dom_listeners();
+		},
+
+		/**
+		 * Returns the index of the current user.
+		 *
+		 * @return int The index of the current user in the LightDM user array.
+		 */
+		get_current_user_index: function() {
+			return current_user_index;
+		},
+
+		/**
+		 * Returns the index of the previous user.
+		 *
+		 * @return int The index of the previous user in the LightDM user array.
+		 */
+		get_previous_user_index: function() {
+			var previous_index = ((current_user_index - 1)+lightdm.num_users);
+			return previous_index % lightdm.num_users;
+		},
+
+		/**
+		 * Returns the index of the next user.
+		 *
+		 * @return int The index of the next user in the LightDM user array.
+		 */
+		get_next_user_index: function() {
+			return ((current_user_index + 1) % lightdm.num_users);
+		},
+
+		/**
+		 * Returns the full name for the user with the given id, if available.
+		 * If a full name is not available, their real name will be used.
+		 * If there is no real name, their username will be used.
+		 *
+		 * @param int user_index Index of the user in the LightDM user array.
+		 * @return string The full name for the user.
+		 */
+		get_full_name_from_index: function(user_index) {
+			var user = lightdm.users[user_index],
+				name;
+
+			if (user.display_name) {
+				name = user.display_name;
+			} else if (user.real_name) {
+				name = user.real_name;
+			} else {
+				name = user.name;
 			}
-		}
+
+			return name;
+		},
+
+		/**
+		 * Returns the path of the picture for the user with the given id.
+		 *
+		 * @param int user_index Index of the user in the LightDM user array.
+		 */
+		get_picture_from_index: function(user_index) {
+			var picture;
+
+			if (lightdm.users[user_index].image) {
+				picture = lightdm.users[user_index].image;
+			} else {
+				picture = default_avatar;
+			}
+
+			return picture;
+		},
+
+
+
+		/**
+		 * Private methods which are exposed for the purpose of testing.
+		 */
+		test_framework: {
+			init_lightdm_handlers:    init_lightdm_handlers,
+			init_keypress_handler:    init_keypress_handler,
+			set_current_user_index:   set_current_user_index,
+		},
 	};
 
-	var select_user_from_list = function(idx) {
-		var idx = idx || 0;
-		var selected_user = lightdm.users[idx].name;
 
-		current_user_index = idx;
 
-		// Set this user as the user to log in
-		user.value = selected_user;
+	/*
+	 *
+	 * Private methods
+	 *
+	 */
 
-		find_and_display_user_picture(idx);
-		find_and_display_user_full_name(idx);
-
-		var userlist_entry = document.getElementById('user-'+selected_user);
-		if (userlist_entry) {
-			// Deselect all other users
-			Array.prototype.forEach.call(user_list.getElementsByClassName('selected'), function(element) {
-				element.className = '';
-			});
-
-			// Mark this user as selected
-			userlist_entry.className = 'selected';
-		}
-
-		clear_message();
-		hide_loading();
-
-		if (lightdm._username) {
-			lightdm.cancel_authentication();
-		}
-
-		if (selected_user !== null) {
-			window.start_authentication(selected_user);
-		}
-	};
-
-	var find_and_display_user_picture = function (idx) {
-		var profile_image = document.getElementById('profile-image');
-		var image = profile_image.getElementsByTagName('img')[0];
-
-		profile_image.style.webkitAnimationName = "none";
-		profile_image.style.animationName = "none";
-
-		if (lightdm.users[idx].image) {
-			image.src = lightdm.users[idx].image;
-		} else {
-			image.src = default_avatar;
-		}
-
-		setTimeout(function() {
-			profile_image.style.webkitAnimationDelay = 0;
-			profile_image.style.webkitAnimationName = "avatar_in";
-			profile_image.style.animationDelay = 0;
-			profile_image.style.animationName = "avatar_in";
-		}, 1);
-	};
-
-	var find_and_display_user_full_name = function (idx) {
-		var name_elements = document.getElementsByClassName('full-name');
-		var name = get_user_full_name(lightdm.users[idx]);
-
-		Array.prototype.forEach.call(name_elements, function(element) {
-			element.innerHTML = name;
-		});
-	};
-
-	var get_user_full_name = function (user) {
-		if (user.display_name) {
-			return user.display_name;
-		} else if (user.real_name) {
-			return user.real_name;
-		} else {
-			return user.name;
+	function init_dom_elements() {
+		if (el_input_user === null) {
+			el_form_login_form   = document.getElementById('login-form');
+			el_input_user        = document.getElementById('user');
+			el_input_pass        = document.getElementById('password');
+			el_list_user_list    = document.getElementById('user-list');
+			el_text_message      = document.getElementById('message');
+			el_heading_full_name = document.getElementById('login-name');
+			el_figure_profile    = document.getElementById('profile-image');
+			el_img_profile       = el_figure_profile.querySelector('img');
+			el_button_shutdown   = document.getElementById('shutdown');
+			el_button_restart    = document.getElementById('reboot');
+			el_button_sleep      = document.getElementById('sleep');
 		}
 	}
 
-	var show_message = function (text) {
-		message.innerHTML= text;
-		message.classList.remove('cleared');
-		message.classList.remove('error');
-	};
 
-	var show_error = function (text) {
+	/**
+	 * Registeres event listeners on DOM elements.
+	 */
+	function init_dom_listeners() {
+		/* Update the current user when a user list entry is clicked */
+		el_list_user_list.addEventListener('click', function(e) {
+			var user_index = parseInt(e.target.id.replace('user-', ''), 10);
+
+			set_current_user_index(user_index);
+			indicate_current_user_on_screen();
+		});
+
+		/* Updates the user list when the currently selected user changes. */
+		el_input_user.addEventListener('change', function(e) {
+			e.preventDefault();
+			indicate_current_user_on_screen(e.currentTarget.selectedIndex);
+		});
+
+		/* Authenticates with LightDM when the login form is submitted. */
+		el_form_login_form.addEventListener('submit', function(e) {
+			e.preventDefault();
+
+			// Clear all messages and display the waiting indicator
+			clear_message();
+			show_wait_indicator();
+
+			window.provide_secret();
+		});
+
+		/* Tell LightDM to shut down when the shutdown button is clicked. */
+		el_button_shutdown.addEventListener('click', function(e) {
+			e.preventDefault();
+			show_message('Goodbye');
+			lightdm.shutdown();
+		});
+
+		/* Tell LightDM to reboot when the reboot button is clicked. */
+		el_button_restart.addEventListener('click', function(e) {
+			e.preventDefault();
+			show_message('See you soon');
+			lightdm.restart();
+		});
+
+		/* Tell LightDM to sleep when the sleep button is clicked. */
+		el_button_sleep.addEventListener('click', function(e) {
+			e.preventDefault();
+			show_message('Goodnight');
+			lightdm.suspend();
+		});
+	}
+
+
+	/**
+	 * Populates the user list with all users registered under LightDM.
+	 */
+	function init_dom_users_list() {
+		var user_index,
+			fullname;
+
+		if (lightdm.num_users > 1) {
+			for (user_index = 0; user_index < lightdm.num_users; user_index++) {
+				if (lightdm.users.hasOwnProperty(user_index)) {
+					fullname = Public.get_full_name_from_index(user_index);
+
+					el_list_user_list.insertAdjacentHTML(
+						'beforeend',
+						'<li id="user-'+user_index+'">'+fullname+'</li>'
+					);
+				}
+			}
+
+			// Select the first user in the list
+			set_current_user_index(0);
+			indicate_current_user_on_screen();
+		}
+	}
+
+
+	/**
+	 * Register keypress handlers.
+	 */
+	function init_keypress_handler() {
+		window.onkeydown = function(e) {
+			var key = (e.key ? e.key : e.keyCode);
+			var new_user_index;
+
+			if (key == 38) {        // Up
+				e.preventDefault();
+
+				// Select the previous user in the list
+				set_current_user_index(Public.get_previous_user_index());
+				indicate_current_user_on_screen();
+			} else if (key == 40) { // Down
+				e.preventDefault();
+
+				// Select the next user in the list
+				set_current_user_index(Public.get_next_user_index());
+				indicate_current_user_on_screen(new_user_index);
+			}
+		};
+	}
+
+
+	/**
+	 * Displays the given general message to the user.
+	 *
+	 * @param string text The message to display.
+	 */
+	function show_message(text) {
+		el_text_message.innerHTML= text;
+		el_text_message.classList.remove('cleared');
+		el_text_message.classList.remove('error');
+	}
+
+
+	/**
+	 * Displays the given error message to the user.
+	 *
+	 * @param string text The error message to display.
+	 */
+	function show_error(text) {
 		show_message(text);
-		message.classList.add('error');
-	};
+		el_text_message.classList.add('error');
+	}
 
-	var clear_message = function () {
+
+	/**
+	 * Clears all messages displayed to the user.
+	 */
+	function clear_message() {
 		show_message('');
-		message.classList.add('cleared');
-	};
+		el_text_message.classList.add('cleared');
+	}
 
-	var show_loading = function () {
-		message.insertAdjacentHTML(
+
+	/**
+	 * Displays the wait indicator to the user.
+	 */
+	function show_wait_indicator() {
+		el_text_message.insertAdjacentHTML(
 			'afterend',
 			'<div class="spinner"></div>'
 		);
 	}
 
-	var hide_loading = function () {
+
+	/**
+	 * Removes the wait indicator.
+	 */
+	function hide_wait_indicator() {
 		var spinners = document.getElementsByClassName('spinner');
 
 		while (spinners[0]) {
@@ -152,105 +305,154 @@ var login = (function (lightdm) {
 		}
 	}
 
-	// Functions that lightdm needs
-	window.start_authentication = function (username) {
-		lightdm.cancel_timed_login();
-		lightdm.start_authentication(username);
-	};
-	window.provide_secret = function () {
-		debug_msg('window.provide_secret() called');
-		password = pass.value || null;
 
-		if (password !== null) {
-			debug_msg('window.provide_secret() password not null');
-			clear_message();
-			show_loading();
+	/**
+	 * Updates the current user picture for the user with the given id.
+	 *
+	 * @param int user_index Index of the user in the LightDM user array.
+	 */
+	function update_user_picture(user_index) {
+		// Disable animation on the image
+		el_figure_profile.style.webkitAnimationName = 'none';
+		el_figure_profile.style.animationName = 'none';
 
-			lightdm.provide_secret(password);
+		// Change the displayed image
+		el_img_profile.src = Public.get_picture_from_index(user_index);
+
+		// Reapply the animation
+		setTimeout(function() {
+			el_figure_profile.style.webkitAnimationDelay = 0;
+			el_figure_profile.style.webkitAnimationName  = 'avatar_in';
+			el_figure_profile.style.animationDelay = 0;
+			el_figure_profile.style.animationName  = 'avatar_in';
+		}, 1);
+	}
+
+
+	/**
+	 * Updates the currently displayed full name for the user with the given id.
+	 *
+	 * @param int user_index Index of the user in the LightDM user array.
+	 */
+	function update_user_full_name(user_index) {
+		var full_name = Public.get_full_name_from_index(user_index);
+		el_heading_full_name.innerHTML = full_name;
+	}
+
+
+	/**
+	 * Sets the current user to the user with the given id.
+	 *
+	 * @param int user_index Index of the user in the LightDM user array.
+	 */
+	function set_current_user_index(user_index) {
+		var current_user_name = lightdm.users[user_index].name;
+
+		// Update the index of the current user globally
+		current_user_index = user_index;
+		
+		// Cancel authentication for a previous authentication attempt
+		if (lightdm._username) {
+			lightdm.cancel_authentication();
 		}
-	};
-	window.authentication_complete = function () {
-		if (lightdm.is_authenticated) {
-			debug_msg('Logged in');
-			lightdm.login(
-				lightdm.authentication_user,
-				lightdm.default_session
-			);
-		} else {
-			show_error('Your password was incorrect');
 
-			pass.value = '';
-			pass.focus();
-			hide_loading();
-
-			lightdm.start_authentication(user.value);
+		// Start authentication for the new user
+		if (current_user_name !== null) {
+			window.start_authentication(current_user_name);
 		}
-	};
-    window.show_error = function (e) {
-		console.log('Error: ' + e);
-    };
-    window.show_prompt = function (e) {
-		console.log('Prompt: ' + e);
-    };
+	}
 
-	// exposed outside of the closure
-	var init = function () {
-		debug_msg('init() called');
 
-		setup_users_list();
-		select_user_from_list();
+	/**
+	 * Indicates the currently selected user in the DOM.
+	 */
+	function indicate_current_user_on_screen() {
+		var index = current_user_index,
+			el_li_user_entry = document.getElementById('user-'+index);
 
-		user.addEventListener('change', function (e) {
-			e.preventDefault();
+		// Set this user as the user to log in
+		el_input_user.value = lightdm.users[current_user_index].name;
 
-			var idx = e.currentTarget.selectedIndex;
-			select_user_from_list(idx);
-		});
+		// Update the display
+		update_user_picture(current_user_index);
+		update_user_full_name(current_user_index);
 
-		document.getElementById('login-form').addEventListener('submit', function (e) {
-			e.preventDefault();
+		// Deselect all other users
+		Array.prototype.forEach.call(
+			el_list_user_list.getElementsByClassName('selected'),
+			function(e) { e.className = ''; }
+		);
 
-			debug_msg('Form submitted');
-			window.provide_secret();
-		});
+		// Mark this user as selected if they have a list entry
+		if (el_li_user_entry) {
+			el_li_user_entry.className = 'selected';
+		}
 
-		document.getElementById('shutdown').addEventListener('click', function (e) {
-			debug_msg('Shutting down');
-			show_message('Goodbye');
-			lightdm.shutdown();
-		});
+		// Clear all messages and the wait indicator
+		clear_message();
+		hide_wait_indicator();
+	}
 
-		document.getElementById('reboot').addEventListener('click', function (e) {
-			debug_msg('Restarting');
-			show_message('See you soon');
-			lightdm.restart();
-		});
 
-		document.getElementById('sleep').addEventListener('click', function (e) {
-			debug_msg('Sleeping');
-			show_message('Goodnight');
-			lightdm.suspend();
-		});
+	/**
+	 * Initializes methods that are used with LightDM.
+	 */
+	function init_lightdm_handlers() {
+		/**
+		 * Begins authenticating the given user.
+		 *
+		 * @param The username of the user to start authenticating.
+		 */
+		window.start_authentication = function(username) {
+			lightdm.cancel_timed_login(); // Cancel any previous login attempt
+			lightdm.start_authentication(username);
+		};
 
-		window.onkeyup = function(e) {
-			var key = e.keyCode ? e.keyCode : e.which;
-			var new_user_index;
+		/**
+		 * Provide the user-entered password to LightDM.
+		 */
+		window.provide_secret = function() {
+			// Pass the user-entered password to LightDM
+			lightdm.provide_secret(el_input_pass.value);
+		};
 
-			if (key == 38) {        // Up
-				// Select the previous user in the list
-				new_user_index = ((current_user_index - 1) + user_count) % user_count;
-				select_user_from_list(new_user_index);
-			} else if (key == 40) { // Down
-				// Select the next user in the list
-				new_user_index = (current_user_index + 1) % user_count;
-				select_user_from_list(new_user_index);
+		/**
+		 * Called when authentication of the user is complete.
+		 */
+		window.authentication_complete = function() {
+			if (lightdm.is_authenticated) {
+				// Log in if the user was successfully authenticated
+				lightdm.login(
+					lightdm.authentication_user,
+					lightdm.default_session
+				);
+			} else {
+				// Show an error message if authentication was not successful
+				show_error('Your password was incorrect');
+
+				// Reset the password field and remove the wait indicator
+				el_input_pass.value = '';
+				el_input_pass.focus();
+				hide_wait_indicator();
+
+				// Restart authentication for the current user
+				lightdm.start_authentication(lightdm.users[current_user_index]);
 			}
-		}
-	};
+		};
 
-	return {
-		init: init
-	};
+		/**
+		 * Called for LightDM to display errors.
+		 */
+		window.show_error = function() { /* do nothing */ };
+
+		/**
+		 * Called for LightDM to display the login prompt.
+		 */
+		window.show_prompt = function() { /* do nothing */ };
+	}
+
+
+
+	// Expose the public interface
+	return Public;
 } (lightdm));
-
-login.init();
