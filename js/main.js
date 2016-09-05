@@ -238,14 +238,15 @@ var login = (function (lightdm) {
 
 			if (key == 38) {        // Up
 				// Select the previous user in the list
-				new_user_index = ((current_user_index - 1) + user_count) % user_count;
+				new_user_index = ((current_user_index - 1) + user_count);
+				new_user_index = new_user_index % user_count;
 				select_user_from_list(new_user_index);
 			} else if (key == 40) { // Down
 				// Select the next user in the list
 				new_user_index = (current_user_index + 1) % user_count;
 				select_user_from_list(new_user_index);
 			}
-		}
+		};
 	};
 
 	return {
