@@ -29,6 +29,7 @@ var login = (function(lightdm) {
 				// Set an event handler to switch the user on click
 				(function(user_index) {
 					document.getElementById('user-' + user_index).addEventListener('click', function(e) {
+						e.preventDefault();
 						select_user_from_list(user_index);
 					});
 				} (user_index));
@@ -275,18 +276,21 @@ var login = (function(lightdm) {
 
 		/* Tell LightDM to shut down when the shutdown button is clicked. */
 		document.getElementById('shutdown').addEventListener('click', function(e) {
+			e.preventDefault();
 			show_message('Goodbye');
 			lightdm.shutdown();
 		});
 
 		/* Tell LightDM to reboot when the reboot button is clicked. */
 		document.getElementById('reboot').addEventListener('click', function(e) {
+			e.preventDefault();
 			show_message('See you soon');
 			lightdm.restart();
 		});
 
 		/* Tell LightDM to sleep when the sleep button is clicked. */
 		document.getElementById('sleep').addEventListener('click', function(e) {
+			e.preventDefault();
 			show_message('Goodnight');
 			lightdm.suspend();
 		});
