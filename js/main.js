@@ -10,115 +10,6 @@ var login = (function(lightdm) {
 		current_user_index = 0;                                       // Index of the currently selected user
 
 	/**
-	 * Populates the user list in the DOM with all users registered under LightDM.
-	 */
-	var setup_users_list = function() {
-		var list = el_ul_user_list,
-			user_index,
-			fullname;
-
-		for (user_index = 0; lightdm.num_users > 1 && user_index < lightdm.num_users; user_index++) {
-			if (lightdm.users.hasOwnProperty(user_index)) {
-				fullname = get_user_full_name(user_index);
-
-				list.insertAdjacentHTML(
-					'beforeend',
-					'<li id="user-' + user_index + '">' + fullname + '</li>'
-				);
-
-				// Set an event handler to switch the user on click
-				(function(user_index) {
-					document.getElementById('user-' + user_index).addEventListener('click', function(e) {
-						e.preventDefault();
-						select_user_from_list(user_index);
-					});
-				} (user_index));
-			}
-		}
-
-		select_user_from_list(0); // Select the first user in the list
-	};
-
-	/**
-	 * Sets the current user to the user with the given id.
-	 *
-	 * @param int user_index The index of the user in the LightDM user array.
-	 */
-	var select_user_from_list = function(user_index) {
-		var selected_user_name = lightdm.users[user_index].name,
-			el_li_user_list_entry = document.getElementById('user-' + user_index);
-
-		// Update the index of the current user globally
-		current_user_index = user_index;
-
-		// Set this user as the user to log in
-		el_input_user.value = selected_user_name;
-
-		// Update the display
-		find_and_display_user_picture(user_index);
-		find_and_display_user_full_name(user_index);
-
-		// Mark this user as selected if they have a list entry
-		if (el_li_user_list_entry) {
-			// Deselect all other users
-			Array.prototype.forEach.call(el_ul_user_list.getElementsByClassName('selected'), function(element) {
-				element.className = '';
-			});
-
-			el_li_user_list_entry.className = 'selected';
-		}
-
-		// Clear all messages and the wait indicator
-		clear_message();
-		hide_wait_indicator();
-
-		// Cancel authentication for a previous authentication attempt
-		if (lightdm._username) {
-			lightdm.cancel_authentication();
-		}
-
-		// Start authentication for the new user
-		if (selected_user_name !== null) {
-			window.start_authentication(selected_user_name);
-		}
-	};
-
-	/**
-	 * Finds and displays the user picture for the user with the given id.
-	 *
-	 * @param int user_index The index of the user in the LightDM user array.
-	 */
-	var find_and_display_user_picture = function(user_index) {
-		// Disable animation on the image
-		el_figure_profile.style.webkitAnimationName = 'none';
-		el_figure_profile.style.animationName = 'none';
-
-		// Change the displayed image
-		if (lightdm.users[user_index].image) {
-			el_img_profile.src = lightdm.users[user_index].image;
-		} else {
-			el_img_profile.src = default_avatar;
-		}
-
-		// Reapply the animation
-		setTimeout(function() {
-			el_figure_profile.style.webkitAnimationDelay = 0;
-			el_figure_profile.style.webkitAnimationName  = 'avatar_in';
-			el_figure_profile.style.animationDelay = 0;
-			el_figure_profile.style.animationName  = 'avatar_in';
-		}, 1);
-	};
-
-	/**
-	 * Finds and displays the full name for the user with the given id.
-	 *
-	 * @param int user_index The index of the user in the LightDM user array.
-	 */
-	var find_and_display_user_full_name = function(user_index) {
-		el_h1_full_name.innerHTML = get_user_full_name(user_index);
-	};
-
-	/**
 	 * Returns the full name for the user with the given id, if available.
 	 * If a full name is not available, their real name will be used.
 	 * If there is no real name, their username will be used.
@@ -188,6 +79,114 @@ var login = (function(lightdm) {
 		}
 	};
 
+	/**
+	 * Finds and displays the user picture for the user with the given id.
+	 *
+	 * @param int user_index The index of the user in the LightDM user array.
+	 */
+	var find_and_display_user_picture = function(user_index) {
+		// Disable animation on the image
+		el_figure_profile.style.webkitAnimationName = 'none';
+		el_figure_profile.style.animationName = 'none';
+
+		// Change the displayed image
+		if (lightdm.users[user_index].image) {
+			el_img_profile.src = lightdm.users[user_index].image;
+		} else {
+			el_img_profile.src = default_avatar;
+		}
+
+		// Reapply the animation
+		setTimeout(function() {
+			el_figure_profile.style.webkitAnimationDelay = 0;
+			el_figure_profile.style.webkitAnimationName  = 'avatar_in';
+			el_figure_profile.style.animationDelay = 0;
+			el_figure_profile.style.animationName  = 'avatar_in';
+		}, 1);
+	};
+
+	/**
+	 * Finds and displays the full name for the user with the given id.
+	 *
+	 * @param int user_index The index of the user in the LightDM user array.
+	 */
+	var find_and_display_user_full_name = function(user_index) {
+		el_h1_full_name.innerHTML = get_user_full_name(user_index);
+	};
+
+	/**
+	 * Sets the current user to the user with the given id.
+	 *
+	 * @param int user_index The index of the user in the LightDM user array.
+	 */
+	var select_user_from_list = function(user_index) {
+		var selected_user_name = lightdm.users[user_index].name,
+			el_li_user_list_entry = document.getElementById('user-' + user_index);
+
+		// Update the index of the current user globally
+		current_user_index = user_index;
+
+		// Set this user as the user to log in
+		el_input_user.value = selected_user_name;
+
+		// Update the display
+		find_and_display_user_picture(user_index);
+		find_and_display_user_full_name(user_index);
+
+		// Mark this user as selected if they have a list entry
+		if (el_li_user_list_entry) {
+			// Deselect all other users
+			Array.prototype.forEach.call(el_ul_user_list.getElementsByClassName('selected'), function(element) {
+				element.className = '';
+			});
+
+			el_li_user_list_entry.className = 'selected';
+		}
+
+		// Clear all messages and the wait indicator
+		clear_message();
+		hide_wait_indicator();
+
+		// Cancel authentication for a previous authentication attempt
+		if (lightdm._username) {
+			lightdm.cancel_authentication();
+		}
+
+		// Start authentication for the new user
+		if (selected_user_name !== null) {
+			window.start_authentication(selected_user_name);
+		}
+	};
+
+	/**
+	 * Populates the user list in the DOM with all users registered under LightDM.
+	 */
+	var setup_users_list = function() {
+		var list = el_ul_user_list,
+			user_index,
+			fullname;
+
+		for (user_index = 0; lightdm.num_users > 1 && user_index < lightdm.num_users; user_index++) {
+			if (lightdm.users.hasOwnProperty(user_index)) {
+				fullname = get_user_full_name(user_index);
+
+				list.insertAdjacentHTML(
+					'beforeend',
+					'<li id="user-' + user_index + '">' + fullname + '</li>'
+				);
+
+				// Set an event handler to switch the user on click
+				(function(user_index) {
+					document.getElementById('user-' + user_index).addEventListener('click', function(e) {
+						e.preventDefault();
+						select_user_from_list(user_index);
+					});
+				} (user_index));
+			}
+		}
+
+		select_user_from_list(0); // Select the first user in the list
+	};
 
 
 	/**
