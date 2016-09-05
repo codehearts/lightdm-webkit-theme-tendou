@@ -1,0 +1,6 @@
+{
+	"camelcase" : false,
+	"globals"   : {
+		"lightdm": false
+	}
+}
