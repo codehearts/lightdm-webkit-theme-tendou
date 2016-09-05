@@ -89,8 +89,8 @@ var login = (function(lightdm) {
 	 */
 	var find_and_display_user_picture = function(user_index) {
 		// Disable animation on the image
-		el_figure_profile.style.webkitAnimationName = "none";
-		el_figure_profile.style.animationName = "none";
+		el_figure_profile.style.webkitAnimationName = 'none';
+		el_figure_profile.style.animationName = 'none';
 
 		// Change the displayed image
 		if (lightdm.users[user_index].image) {
@@ -102,9 +102,9 @@ var login = (function(lightdm) {
 		// Reapply the animation
 		setTimeout(function() {
 			el_figure_profile.style.webkitAnimationDelay = 0;
-			el_figure_profile.style.webkitAnimationName  = "avatar_in";
+			el_figure_profile.style.webkitAnimationName  = 'avatar_in';
 			el_figure_profile.style.animationDelay = 0;
-			el_figure_profile.style.animationName  = "avatar_in";
+			el_figure_profile.style.animationName  = 'avatar_in';
 		}, 1);
 	};
 
