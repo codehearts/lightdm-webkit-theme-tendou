@@ -16,13 +16,81 @@ var Tendou = (function(lightdm) {
 		},
 
 		/**
+		 * Returns the index of the current user.
+		 *
+		 * @return int The index of the current user in the LightDM user array.
+		 */
+		get_current_user_index: function() {
+			return current_user_index;
+		},
+
+		/**
+		 * Returns the index of the previous user.
+		 *
+		 * @return int The index of the previous user in the LightDM user array.
+		 */
+		get_previous_user_index: function() {
+			var previous_index = ((current_user_index - 1)+lightdm.num_users);
+			return previous_index % lightdm.num_users;
+		},
+
+		/**
+		 * Returns the index of the next user.
+		 *
+		 * @return int The index of the next user in the LightDM user array.
+		 */
+		get_next_user_index: function() {
+			return ((current_user_index + 1) % lightdm.num_users);
+		},
+
+		/**
+		 * Returns the full name for the user with the given id, if available.
+		 * If a full name is not available, their real name will be used.
+		 * If there is no real name, their username will be used.
+		 *
+		 * @param int user_index The index of the user in the LightDM user array.
+		 * @return string The full name for the user.
+		 */
+		get_full_name_from_index: function(user_index) {
+			var user = lightdm.users[user_index],
+				name;
+
+			if (user.display_name) {
+				name = user.display_name;
+			} else if (user.real_name) {
+				name = user.real_name;
+			} else {
+				name = user.name;
+			}
+
+			return name;
+		},
+
+		/**
+		 * Returns the path of the picture for the user with the given id.
+		 *
+		 * @param int user_index The index of the user in the LightDM user array.
+		 */
+		get_picture_from_index: function(user_index) {
+			var picture;
+
+			if (lightdm.users[user_index].image) {
+				picture = lightdm.users[user_index].image;
+			} else {
+				picture = default_avatar;
+			}
+
+			return picture;
+		},
+
+
+
+		/**
 		 * Private methods which are exposed for the purpose of testing.
 		 */
 		test_framework: {
 			init_lightdm_handlers:    init_lightdm_handlers,
 			init_keypress_handler:    init_keypress_handler,
-			get_full_name_from_index: get_full_name_from_index,
-			get_picture_from_index:   get_picture_from_index,
 		},
 	};
 
@@ -34,19 +102,19 @@ var Tendou = (function(lightdm) {
 	 *
 	 */
 
-	var el_form_login_form = null, // Login form
-		el_input_user      = null, // User input field
-		el_input_pass      = null, // Password input field
-		el_ul_user_list    = null, // List of users
-		el_p_message       = null, // Messages to display to the user
-		el_h1_full_name    = null, // Heading for the current user's full name
-		el_figure_profile  = null, // Container for the current user's picture
-		el_img_profile     = null, // Container for the current user's picture
-		el_button_shutdown = null, // Shutdown button
-		el_button_restart  = null, // Restart button
-		el_button_sleep    = null, // Sleep button
-		current_user_index = 0,    // Index of the currently selected user
-		default_avatar     = 'images/default-avatar.png';
+	var el_form_login_form   = null, // Login form
+		el_input_user        = null, // User input field
+		el_input_pass        = null, // Password input field
+		el_list_user_list    = null, // List of users
+		el_text_message      = null, // Messages to display to the user
+		el_heading_full_name = null, // Heading for the current user's full name
+		el_figure_profile    = null, // Container for the current user's picture
+		el_img_profile       = null, // Container for the current user's picture
+		el_button_shutdown   = null, // Shutdown button
+		el_button_restart    = null, // Restart button
+		el_button_sleep      = null, // Sleep button
+		current_user_index   = 0,    // Index of the currently selected user
+		default_avatar       = 'images/default-avatar.png';
 
 
 
@@ -58,17 +126,17 @@ var Tendou = (function(lightdm) {
 
 	function init_dom_elements() {
 		if (el_input_user === null) {
-			el_form_login_form = document.getElementById('login-form');
-			el_input_user      = document.getElementById('user');
-			el_input_pass      = document.getElementById('password');
-			el_ul_user_list    = document.getElementById('user-list');
-			el_p_message       = document.getElementById('message');
-			el_h1_full_name    = document.getElementById('login-name');
-			el_figure_profile  = document.getElementById('profile-image');
-			el_img_profile     = el_figure_profile.querySelector('img');
-			el_button_shutdown = document.getElementById('shutdown');
-			el_button_restart  = document.getElementById('reboot');
-			el_button_sleep    = document.getElementById('sleep');
+			el_form_login_form   = document.getElementById('login-form');
+			el_input_user        = document.getElementById('user');
+			el_input_pass        = document.getElementById('password');
+			el_list_user_list    = document.getElementById('user-list');
+			el_text_message      = document.getElementById('message');
+			el_heading_full_name = document.getElementById('login-name');
+			el_figure_profile    = document.getElementById('profile-image');
+			el_img_profile       = el_figure_profile.querySelector('img');
+			el_button_shutdown   = document.getElementById('shutdown');
+			el_button_restart    = document.getElementById('reboot');
+			el_button_sleep      = document.getElementById('sleep');
 		}
 	};
 
@@ -78,7 +146,7 @@ var Tendou = (function(lightdm) {
 	 */
 	function init_dom_listeners() {
 		/* Update the current user when a user list entry is clicked */
-		el_ul_user_list.addEventListener('click', function(e) {
+		el_list_user_list.addEventListener('click', function(e) {
 			var user_index = parseInt(e.target.id.replace('user-', ''), 10);
 
 			set_current_user(user_index);
@@ -135,9 +203,9 @@ var Tendou = (function(lightdm) {
 		if (lightdm.num_users > 1) {
 			for (user_index = 0; user_index < lightdm.num_users; user_index++) {
 				if (lightdm.users.hasOwnProperty(user_index)) {
-					fullname = get_full_name_from_index(user_index);
+					fullname = Public.get_full_name_from_index(user_index);
 
-					el_ul_user_list.insertAdjacentHTML(
+					el_list_user_list.insertAdjacentHTML(
 						'beforeend',
 						'<li id="user-'+user_index+'">'+fullname+'</li>'
 					);
@@ -163,40 +231,16 @@ var Tendou = (function(lightdm) {
 				e.preventDefault();
 
 				// Select the previous user in the list
-				new_user_index = ((current_user_index - 1)+lightdm.num_users);
-				new_user_index = new_user_index % lightdm.num_users;
-				set_current_user(new_user_index);
+				set_current_user(Public.get_previous_user_index());
 				indicate_current_user_on_screen();
 			} else if (key == 40) { // Down
 				e.preventDefault();
 
 				// Select the next user in the list
-				new_user_index = (current_user_index+1) % lightdm.num_users;
-				set_current_user(new_user_index);
+				set_current_user(Public.get_next_user_index());
 				indicate_current_user_on_screen(new_user_index);
 			}
 		};
-	};
-
-
-	/**
-	 * Returns the full name for the user with the given id, if available.
-	 * If a full name is not available, their real name will be used.
-	 * If there is no real name, their username will be used.
-	 *
-	 * @param int user_index The index of the user in the LightDM user array.
-	 * @return string The full name for the user.
-	 */
-	function get_full_name_from_index(user_index) {
-		var user = lightdm.users[user_index];
-
-		if (user.display_name) {
-			return user.display_name;
-		} else if (user.real_name) {
-			return user.real_name;
-		} else {
-			return user.name;
-		}
 	};
 
 
@@ -206,9 +250,9 @@ var Tendou = (function(lightdm) {
 	 * @param string text The message to display.
 	 */
 	function show_message(text) {
-		el_p_message.innerHTML= text;
-		el_p_message.classList.remove('cleared');
-		el_p_message.classList.remove('error');
+		el_text_message.innerHTML= text;
+		el_text_message.classList.remove('cleared');
+		el_text_message.classList.remove('error');
 	};
 
 
@@ -219,7 +263,7 @@ var Tendou = (function(lightdm) {
 	 */
 	function show_error(text) {
 		show_message(text);
-		el_p_message.classList.add('error');
+		el_text_message.classList.add('error');
 	};
 
 
@@ -228,7 +272,7 @@ var Tendou = (function(lightdm) {
 	 */
 	function clear_message() {
 		show_message('');
-		el_p_message.classList.add('cleared');
+		el_text_message.classList.add('cleared');
 	};
 
 
@@ -236,7 +280,7 @@ var Tendou = (function(lightdm) {
 	 * Displays the wait indicator to the user.
 	 */
 	function show_wait_indicator() {
-		el_p_message.insertAdjacentHTML(
+		el_text_message.insertAdjacentHTML(
 			'afterend',
 			'<div class="spinner"></div>'
 		);
@@ -256,24 +300,6 @@ var Tendou = (function(lightdm) {
 
 
 	/**
-	 * Returns the path of the picture for the user with the given id.
-	 *
-	 * @param int user_index The index of the user in the LightDM user array.
-	 */
-	function get_picture_from_index(user_index) {
-		var picture;
-
-		if (lightdm.users[user_index].image) {
-			picture = lightdm.users[user_index].image;
-		} else {
-			picture = default_avatar;
-		}
-
-		return picture;
-	};
-
-
-	/**
 	 * Updates the current user picture for the user with the given id.
 	 *
 	 * @param int user_index The index of the user in the LightDM user array.
@@ -284,7 +310,7 @@ var Tendou = (function(lightdm) {
 		el_figure_profile.style.animationName = 'none';
 
 		// Change the displayed image
-		el_img_profile.src = get_picture_from_index(user_index);
+		el_img_profile.src = Public.get_picture_from_index(user_index);
 
 		// Reapply the animation
 		setTimeout(function() {
@@ -302,7 +328,7 @@ var Tendou = (function(lightdm) {
 	 * @param int user_index The index of the user in the LightDM user array.
 	 */
 	function update_user_full_name(user_index) {
-		el_h1_full_name.innerHTML = get_full_name_from_index(user_index);
+		el_heading_full_name.innerHTML = Public.get_full_name_from_index(user_index);
 	};
 
 
@@ -345,7 +371,7 @@ var Tendou = (function(lightdm) {
 
 		// Deselect all other users
 		Array.prototype.forEach.call(
-			el_ul_user_list.getElementsByClassName('selected'),
+			el_list_user_list.getElementsByClassName('selected'),
 			function(e) { e.className = ''; }
 		);
 
