@@ -1,3 +1,5 @@
 {
-	"camelcase" : false
+	"camelcase" : false,
+	"mocha"     : true,
+	"globals"   : ['Tendou']
 }
