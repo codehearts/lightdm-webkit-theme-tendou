@@ -1,0 +1,3 @@
+[submodule "js/mock"]
+	path = js/mock
+	url = https://github.com/omgmog/lightdm-webkit-theme-developer-helper.git
