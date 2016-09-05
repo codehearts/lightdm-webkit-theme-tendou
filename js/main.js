@@ -91,7 +91,7 @@ var Tendou = (function(lightdm) {
 		test_framework: {
 			init_lightdm_handlers:    init_lightdm_handlers,
 			init_keypress_handler:    init_keypress_handler,
-			set_current_user:         set_current_user,
+			set_current_user_index:   set_current_user_index,
 		},
 	};
 
@@ -150,7 +150,7 @@ var Tendou = (function(lightdm) {
 		el_list_user_list.addEventListener('click', function(e) {
 			var user_index = parseInt(e.target.id.replace('user-', ''), 10);
 
-			set_current_user(user_index);
+			set_current_user_index(user_index);
 			indicate_current_user_on_screen();
 		});
 
@@ -214,7 +214,7 @@ var Tendou = (function(lightdm) {
 			}
 
 			// Select the first user in the list
-			set_current_user(0);
+			set_current_user_index(0);
 			indicate_current_user_on_screen();
 		}
 	};
@@ -232,13 +232,13 @@ var Tendou = (function(lightdm) {
 				e.preventDefault();
 
 				// Select the previous user in the list
-				set_current_user(Public.get_previous_user_index());
+				set_current_user_index(Public.get_previous_user_index());
 				indicate_current_user_on_screen();
 			} else if (key == 40) { // Down
 				e.preventDefault();
 
 				// Select the next user in the list
-				set_current_user(Public.get_next_user_index());
+				set_current_user_index(Public.get_next_user_index());
 				indicate_current_user_on_screen(new_user_index);
 			}
 		};
@@ -338,7 +338,7 @@ var Tendou = (function(lightdm) {
 	 *
 	 * @param int user_index The index of the user in the LightDM user array.
 	 */
-	function set_current_user(user_index) {
+	function set_current_user_index(user_index) {
 		var current_user_name = lightdm.users[user_index].name;
 
 		// Update the index of the current user globally
