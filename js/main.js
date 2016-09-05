@@ -48,7 +48,7 @@ var Tendou = (function(lightdm) {
 		 * If a full name is not available, their real name will be used.
 		 * If there is no real name, their username will be used.
 		 *
-		 * @param int user_index The index of the user in the LightDM user array.
+		 * @param int user_index Index of the user in the LightDM user array.
 		 * @return string The full name for the user.
 		 */
 		get_full_name_from_index: function(user_index) {
@@ -69,7 +69,7 @@ var Tendou = (function(lightdm) {
 		/**
 		 * Returns the path of the picture for the user with the given id.
 		 *
-		 * @param int user_index The index of the user in the LightDM user array.
+		 * @param int user_index Index of the user in the LightDM user array.
 		 */
 		get_picture_from_index: function(user_index) {
 			var picture;
@@ -303,7 +303,7 @@ var Tendou = (function(lightdm) {
 	/**
 	 * Updates the current user picture for the user with the given id.
 	 *
-	 * @param int user_index The index of the user in the LightDM user array.
+	 * @param int user_index Index of the user in the LightDM user array.
 	 */
 	function update_user_picture(user_index) {
 		// Disable animation on the image
@@ -326,17 +326,18 @@ var Tendou = (function(lightdm) {
 	/**
 	 * Updates the currently displayed full name for the user with the given id.
 	 *
-	 * @param int user_index The index of the user in the LightDM user array.
+	 * @param int user_index Index of the user in the LightDM user array.
 	 */
 	function update_user_full_name(user_index) {
-		el_heading_full_name.innerHTML = Public.get_full_name_from_index(user_index);
+		var full_name = Public.get_full_name_from_index(user_index);
+		el_heading_full_name.innerHTML = full_name;
 	}
 
 
 	/**
 	 * Sets the current user to the user with the given id.
 	 *
-	 * @param int user_index The index of the user in the LightDM user array.
+	 * @param int user_index Index of the user in the LightDM user array.
 	 */
 	function set_current_user_index(user_index) {
 		var current_user_name = lightdm.users[user_index].name;
