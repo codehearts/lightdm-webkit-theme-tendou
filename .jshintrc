@@ -2,6 +2,7 @@
 	"camelcase" : false,
 	"mocha"     : true,
 	"globals"   : {
+		"Tendou":  false,
 		"lightdm": false
 	}
 }
