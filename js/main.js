@@ -161,7 +161,7 @@ var login = (function(lightdm) {
 	};
 
 	/**
-	 * Populates the user list in the DOM with all users registered under LightDM.
+	 * Populates the user list with all users registered under LightDM.
 	 */
 	var setup_users_list = function() {
 		var list = el_ul_user_list,
@@ -249,12 +249,12 @@ var login = (function(lightdm) {
 	/**
 	 * Called for LightDM to display errors.
 	 */
-    window.show_error  = function(e) { /* no used */ };
+    window.show_error  = function(e) { e.preventDefault(); };
 
 	/**
 	 * Called for LightDM to display the login prompt.
 	 */
-    window.show_prompt = function(e) { /* no used */ };
+    window.show_prompt = function(e) { e.preventDefault(); };
 
 
 
