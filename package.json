@@ -1,0 +1,32 @@
+{
+  "name": "lightdm-webkit-theme-tendou",
+  "version": "0.0.1",
+  "description": "LightDM Webkit theme Tendou  frontend",
+  "license": "GPL-3.0",
+  "repository": "codehearts/lightdm-webkit-theme-tendou",
+  "bugs": { "url" : "http://github.com/codehearts/lightdm-webkit-theme-tendou/issues"
+  },
+  "author": {
+    "name": "Kate Hart",
+    "email": "kejt.hart@gmail.com"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "./node_modules/karma/bin/karma start karma.conf.js --single-run"
+  },
+  "devDependencies": {
+    "istanbul": "^0.4.4",
+    "karma": "^1.1.0",
+	"karma-coverage": "^1.0.0",
+	"karma-mocha": "^1.1.1",
+    "karma-mocha-reporter": "^2.0.4",
+    "karma-phantomjs-launcher": "^1.0.1",
+    "karma-sinon-chai": "^1.2.2",
+    "mocha": "^3.0.2",
+    "phantomjs-prebuilt": "^2.1.7",
+    "sinon": "^1.17.4",
+    "sinon-chai": "^2.8.0"
+  }
+}
