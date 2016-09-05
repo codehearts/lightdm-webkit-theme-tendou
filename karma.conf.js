@@ -1,5 +1,5 @@
 // Karma configuration
-'use strict'
+'use strict';
 
 module.exports = function (config) {
   config.set({
@@ -43,7 +43,7 @@ module.exports = function (config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    // coverage is from karma-coverage and provides Istanbul code coverage reports
+    // coverage is from karma-coverage and provides Istanbul coverage reports
     reporters: ['progress', 'mocha', 'coverage'],
 
     // web server port
@@ -53,11 +53,13 @@ module.exports = function (config) {
     colors: true,
 
     // level of logging
-    // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+    // possible values:
+	// config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN ||
+	//   config.LOG_INFO || config.LOG_DEBUG
     logLevel: config.LOG_INFO,
 
-    // start these browsers
-    // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
+    // start these browsers. available browser launchers:
+	// https://npmjs.org/browse/keyword/karma-launcher
     browsers: ['PhantomJS'],
 
     // Continuous Integration mode
@@ -68,4 +70,4 @@ module.exports = function (config) {
     // how many browser should be started simultaneous
     concurrency: Infinity
   })
-}
+};

@@ -139,7 +139,7 @@ var Tendou = (function(lightdm) {
 			el_button_restart    = document.getElementById('reboot');
 			el_button_sleep      = document.getElementById('sleep');
 		}
-	};
+	}
 
 
 	/**
@@ -191,7 +191,7 @@ var Tendou = (function(lightdm) {
 			show_message('Goodnight');
 			lightdm.suspend();
 		});
-	};
+	}
 
 
 	/**
@@ -217,7 +217,7 @@ var Tendou = (function(lightdm) {
 			set_current_user_index(0);
 			indicate_current_user_on_screen();
 		}
-	};
+	}
 
 
 	/**
@@ -242,7 +242,7 @@ var Tendou = (function(lightdm) {
 				indicate_current_user_on_screen(new_user_index);
 			}
 		};
-	};
+	}
 
 
 	/**
@@ -254,7 +254,7 @@ var Tendou = (function(lightdm) {
 		el_text_message.innerHTML= text;
 		el_text_message.classList.remove('cleared');
 		el_text_message.classList.remove('error');
-	};
+	}
 
 
 	/**
@@ -265,7 +265,7 @@ var Tendou = (function(lightdm) {
 	function show_error(text) {
 		show_message(text);
 		el_text_message.classList.add('error');
-	};
+	}
 
 
 	/**
@@ -274,7 +274,7 @@ var Tendou = (function(lightdm) {
 	function clear_message() {
 		show_message('');
 		el_text_message.classList.add('cleared');
-	};
+	}
 
 
 	/**
@@ -285,7 +285,7 @@ var Tendou = (function(lightdm) {
 			'afterend',
 			'<div class="spinner"></div>'
 		);
-	};
+	}
 
 
 	/**
@@ -297,7 +297,7 @@ var Tendou = (function(lightdm) {
 		while (spinners[0]) {
 			spinners[0].parentNode.removeChild(spinners[0]);
 		}
-	};
+	}
 
 
 	/**
@@ -320,7 +320,7 @@ var Tendou = (function(lightdm) {
 			el_figure_profile.style.animationDelay = 0;
 			el_figure_profile.style.animationName  = 'avatar_in';
 		}, 1);
-	};
+	}
 
 
 	/**
@@ -330,7 +330,7 @@ var Tendou = (function(lightdm) {
 	 */
 	function update_user_full_name(user_index) {
 		el_heading_full_name.innerHTML = Public.get_full_name_from_index(user_index);
-	};
+	}
 
 
 	/**
@@ -353,7 +353,7 @@ var Tendou = (function(lightdm) {
 		if (current_user_name !== null) {
 			window.start_authentication(current_user_name);
 		}
-	};
+	}
 
 
 	/**
@@ -384,7 +384,7 @@ var Tendou = (function(lightdm) {
 		// Clear all messages and the wait indicator
 		clear_message();
 		hide_wait_indicator();
-	};
+	}
 
 
 	/**
@@ -436,13 +436,13 @@ var Tendou = (function(lightdm) {
 		/**
 		 * Called for LightDM to display errors.
 		 */
-		window.show_error = function(e) { e; /* do nothing */ };
+		window.show_error = function() { /* do nothing */ };
 
 		/**
 		 * Called for LightDM to display the login prompt.
 		 */
-		window.show_prompt = function(e) { e; /* do nothing */ };
-	};
+		window.show_prompt = function() { /* do nothing */ };
+	}
 
 
 
