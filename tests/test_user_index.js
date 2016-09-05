@@ -1,3 +1,4 @@
+/* global Tendou, assert */
 describe('Tendou', function() {
   before(function() {
 	// Initialize the LightDM handlers before running these tests
