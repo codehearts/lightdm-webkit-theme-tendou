@@ -11,6 +11,13 @@ module.exports = function (config) {
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['mocha', 'sinon-chai'],
 
+    preprocessors: {
+      // source files, that you wanna generate coverage for
+      // do not include tests or libraries
+      // (these files will be instrumented by Istanbul)
+      'js/*.js': ['coverage']
+    },
+
     // list of files / patterns to load in the browser
     files: [
       'js/mock/*.js',
@@ -37,7 +44,7 @@ module.exports = function (config) {
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     // coverage is from karma-coverage and provides Istanbul code coverage reports
-    reporters: ['mocha', 'coverage'],
+    reporters: ['progress', 'mocha', 'coverage'],
 
     // web server port
     port: 9876,
