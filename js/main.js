@@ -91,6 +91,7 @@ var Tendou = (function(lightdm) {
 		test_framework: {
 			init_lightdm_handlers:    init_lightdm_handlers,
 			init_keypress_handler:    init_keypress_handler,
+			set_current_user:         set_current_user,
 		},
 	};
 
