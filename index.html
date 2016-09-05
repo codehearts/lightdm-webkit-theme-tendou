@@ -11,24 +11,20 @@
 	<body>
 		<div id="login-card">
 			<figure id="profile-image">
-				<img src="images/default-avatar.png" />
+				<img src="images/default-avatar.png" alt="" />
 			</figure>
 
-			<h1 id="login-name" class="full-name"></h1>
+			<h1 id="login-name"></h1>
 
-			<form id="login-form">
-				<input type="hidden" id="user"></select>
-				<input id="password" type="password" tabindex="1" autofocus
-					v-model="password"
-					v-attr="disabled: !passwordPrompt"
-					v-el="password" />
+			<form id="login-form" action="">
+				<input type="hidden" id="user" />
+				<input id="password" type="password" tabindex="1" autofocus />
 			</form>
 
 			<p id="message" class="cleared"></p>
 		</div>
 
-		<ul id="user-list">
-		</ul>
+		<ul id="user-list"></ul>
 
 		<div id="power-button">
 			<ul id="power-menu">
@@ -46,5 +42,9 @@
 
 		<script src="js/mock/mock.js"></script>
 		<script src="js/main.js"></script>
+		<script>
+			/* Initialize the theme. */
+			Tendou.init();
+		</script>
 	</body>
 </html>
