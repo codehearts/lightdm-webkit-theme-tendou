@@ -1,6 +1,33 @@
 var Tendou = (function(lightdm) {
 	'use strict';
 
+	/*
+	 *
+	 * Private properties
+	 *
+	 */
+
+	var el_form_login_form   = null, // Login form
+		el_input_user        = null, // User input field
+		el_input_pass        = null, // Password input field
+		el_list_user_list    = null, // List of users
+		el_text_message      = null, // Messages to display to the user
+		el_heading_full_name = null, // Heading for the current user's full name
+		el_figure_profile    = null, // Container for the current user's picture
+		el_img_profile       = null, // Container for the current user's picture
+		el_button_shutdown   = null, // Shutdown button
+		el_button_restart    = null, // Restart button
+		el_button_sleep      = null, // Sleep button
+		current_user_index   = 0,    // Index of the currently selected user
+		default_avatar       = 'images/default-avatar.png';
+
+
+	/*
+	 *
+	 * Public members
+	 *
+	 */
+
 	var Public = {
 		/**
 		 * Initializes the functionality for this theme.
@@ -94,28 +121,6 @@ var Tendou = (function(lightdm) {
 			set_current_user_index:   set_current_user_index,
 		},
 	};
-
-
-
-	/*
-	 *
-	 * Private properties
-	 *
-	 */
-
-	var el_form_login_form   = null, // Login form
-		el_input_user        = null, // User input field
-		el_input_pass        = null, // Password input field
-		el_list_user_list    = null, // List of users
-		el_text_message      = null, // Messages to display to the user
-		el_heading_full_name = null, // Heading for the current user's full name
-		el_figure_profile    = null, // Container for the current user's picture
-		el_img_profile       = null, // Container for the current user's picture
-		el_button_shutdown   = null, // Shutdown button
-		el_button_restart    = null, // Restart button
-		el_button_sleep      = null, // Sleep button
-		current_user_index   = 0,    // Index of the currently selected user
-		default_avatar       = 'images/default-avatar.png';
 
 
 
