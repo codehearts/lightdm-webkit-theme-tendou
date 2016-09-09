@@ -1,6 +1,22 @@
 {
-	"camelcase" : false,
-	"globals"   : {
-		"lightdm": false
-	}
+  "asi": false,
+  "bitwise": true,
+  "browser": true,
+  "camelcase": false,
+  "curly": true,
+  "forin": true,
+  "immed": true,
+  "latedef": "nofunc",
+  "maxlen": 80,
+  "newcap": true,
+  "noarg": true,
+  "noempty": true,
+  "nonew": true,
+  "quotmark": true,
+  "trailing": true,
+  "undef": true,
+  "unused": true,
+  "globals": {
+    "lightdm": false
+  }
 }
