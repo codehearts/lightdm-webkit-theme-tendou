@@ -1,4 +1,5 @@
 /* exported Tendou */
+/* jshint latedef: false */
 var Tendou = (function(lightdm) {
 	'use strict';
 
