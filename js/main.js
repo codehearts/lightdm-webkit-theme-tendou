@@ -20,27 +20,119 @@ var Tendou = (function(lightdm) {
 		el_button_restart    = null, // Restart button
 		el_button_sleep      = null, // Sleep button
 		current_user_index   = 0,    // Index of the currently selected user
+		keypress_handlers    = {},   // Registered keypress callbacks
 		default_avatar       = 'images/default-avatar.png';
+
 
 
 	/*
 	 *
-	 * Public members
+	 * Private methods
 	 *
 	 */
 
-	var Public = {
+	var Private = {
 		/**
-		 * Initializes the functionality for this theme.
+		 * Initializes methods that are used with LightDM.
 		 */
-		init: function() {
-			init_lightdm_handlers();
-			init_keypress_handler();
+		init_lightdm_handlers: function() {
+			/**
+			 * Begins authenticating the given user.
+			 *
+			 * @param The username of the user to start authenticating.
+			 */
+			window.start_authentication = function(username) {
+				lightdm.cancel_timed_login(); // Cancel any previous login attempt
+				lightdm.start_authentication(username);
+			};
 
-			// DOM initializers
-			init_dom_elements();
-			init_dom_users_list();
-			init_dom_listeners();
+			/**
+			 * Provide the user-entered password to LightDM.
+			 */
+			window.provide_secret = function() {
+				// Pass the user-entered password to LightDM
+				lightdm.provide_secret(el_input_pass.value);
+			};
+
+			/**
+			 * Called when authentication of the user is complete.
+			 */
+			window.authentication_complete = function() {
+				if (lightdm.is_authenticated) {
+					// Log in if the user was successfully authenticated
+					lightdm.login(
+						lightdm.authentication_user,
+						lightdm.default_session
+					);
+				} else {
+					// Show an error message if authentication was not successful
+					show_error('Your password was incorrect');
+
+					// Reset the password field and remove the wait indicator
+					el_input_pass.value = '';
+					el_input_pass.focus();
+					hide_wait_indicator();
+
+					// Restart authentication for the current user
+					lightdm.start_authentication(lightdm.users[current_user_index]);
+				}
+			};
+
+			/**
+			 * Called for LightDM to display errors.
+			 */
+			window.show_error = function() { /* do nothing */ };
+
+			/**
+			 * Called for LightDM to display the login prompt.
+			 */
+			window.show_prompt = function() { /* do nothing */ };
+		},
+
+		/**
+		 * Register keypress handlers.
+		 */
+		init_keypress_handler: function() {
+			window.onkeydown = Private.keypress_event_translator;
+
+			// Up arrow selects previous user, down arrow selects next user
+			Public.register_keypress_handler(38, Public.select_previous_user);
+			Public.register_keypress_handler(40, Public.select_next_user);
+		},
+
+		/**
+		 * Calls `keypress_handler` with the information from a KeyboardEvent.
+		 * `preventDefault` will be called on the event if it is handled.
+		 *
+		 * @param event e The KeyboardEvent to forward to `keypress_handler`.
+		 */
+		keypress_event_translator: function(e) {
+			var key = (e.key ? e.key : e.keyCode);
+
+			if (Private.keypress_handler(key)) {
+				e.preventDefault();
+			}
+		},
+
+		/**
+		 * Calls all callbacks registered to a specific keybinding.
+		 * The return value should be used to determine whether to call
+		 * preventDefault() on the KeyboardEvent object.
+		 *
+		 * @param int key_code The code of the key pressed.
+		 * @return bool True if the key was handled, false otherwise.
+		 */
+		keypress_handler: function(key_code) {
+			var was_handled = false;
+
+			if (keypress_handlers[key_code] !== undefined) {
+				keypress_handlers[key_code].forEach(function(callback) {
+					was_handled = true;
+					callback();
+				});
+			}
+
+			return was_handled;
 		},
 
 		/**
@@ -72,54 +164,25 @@ var Tendou = (function(lightdm) {
 		},
 
 		/**
-		 * Returns the full name for the user with the given id, if available.
-		 * If a full name is not available, their real name will be used.
-		 * If there is no real name, their username will be used.
-		 *
-		 * @param int user_index Index of the user in the LightDM user array.
-		 * @return string The full name for the user.
-		 */
-		get_full_name_from_index: function(user_index) {
-			var user = lightdm.users[user_index],
-				name;
-
-			if (user.display_name) {
-				name = user.display_name;
-			} else if (user.real_name) {
-				name = user.real_name;
-			} else {
-				name = user.name;
-			}
-
-			return name;
-		},
-
-		/**
-		 * Returns the path of the picture for the user with the given id.
+		 * Sets the current user to the user with the given id.
 		 *
 		 * @param int user_index Index of the user in the LightDM user array.
 		 */
-		get_picture_from_index: function(user_index) {
-			var picture;
+		set_current_user_index: function(user_index) {
+			var current_user_name = lightdm.users[user_index].name;
 
-			if (lightdm.users[user_index].image) {
-				picture = lightdm.users[user_index].image;
-			} else {
-				picture = default_avatar;
+			// Update the index of the current user globally
+			current_user_index = user_index;
+			
+			// Cancel authentication for a previous authentication attempt
+			if (lightdm._username) {
+				lightdm.cancel_authentication();
 			}
 
-			return picture;
-		},
-
-
-
-		/**
-		 * Private methods which are exposed for the purpose of testing.
-		 */
-		test_framework: {
-			init_lightdm_handlers:    init_lightdm_handlers,
-			init_keypress_handler:    init_keypress_handler,
-			set_current_user_index:   set_current_user_index,
+			// Start authentication for the new user
+			if (current_user_name !== null) {
+				window.start_authentication(current_user_name);
+			}
 		},
 	};
 
@@ -156,7 +219,7 @@ var Tendou = (function(lightdm) {
 		el_list_user_list.addEventListener('click', function(e) {
 			var user_index = parseInt(e.target.id.replace('user-', ''), 10);
 
-			set_current_user_index(user_index);
+			Private.set_current_user_index(user_index);
 			indicate_current_user_on_screen();
 		});
 
@@ -220,34 +283,9 @@ var Tendou = (function(lightdm) {
 			}
 
 			// Select the first user in the list
-			set_current_user_index(0);
+			Private.set_current_user_index(0);
 			indicate_current_user_on_screen();
 		}
-	}
-
-
-	/**
-	 * Register keypress handlers.
-	 */
-	function init_keypress_handler() {
-		window.onkeydown = function(e) {
-			var key = (e.key ? e.key : e.keyCode);
-			var new_user_index;
-
-			if (key == 38) {        // Up
-				e.preventDefault();
-
-				// Select the previous user in the list
-				set_current_user_index(Public.get_previous_user_index());
-				indicate_current_user_on_screen();
-			} else if (key == 40) { // Down
-				e.preventDefault();
-
-				// Select the next user in the list
-				set_current_user_index(Public.get_next_user_index());
-				indicate_current_user_on_screen(new_user_index);
-			}
-		};
 	}
 
 
@@ -341,29 +379,6 @@ var Tendou = (function(lightdm) {
 
 
 	/**
-	 * Sets the current user to the user with the given id.
-	 *
-	 * @param int user_index Index of the user in the LightDM user array.
-	 */
-	function set_current_user_index(user_index) {
-		var current_user_name = lightdm.users[user_index].name;
-
-		// Update the index of the current user globally
-		current_user_index = user_index;
-		
-		// Cancel authentication for a previous authentication attempt
-		if (lightdm._username) {
-			lightdm.cancel_authentication();
-		}
-
-		// Start authentication for the new user
-		if (current_user_name !== null) {
-			window.start_authentication(current_user_name);
-		}
-	}
-
-
-	/**
 	 * Indicates the currently selected user in the DOM.
 	 */
 	function indicate_current_user_on_screen() {
@@ -394,62 +409,104 @@ var Tendou = (function(lightdm) {
 	}
 
 
-	/**
-	 * Initializes methods that are used with LightDM.
+
+	/*
+	 *
+	 * Public members
+	 *
 	 */
-	function init_lightdm_handlers() {
+
+	var Public = {
 		/**
-		 * Begins authenticating the given user.
+		 * Initializes the functionality for this theme.
+		 */
+		init: function() {
+			Private.init_lightdm_handlers();
+			Private.init_keypress_handler();
+
+			// DOM initializers
+			init_dom_elements();
+			init_dom_users_list();
+			init_dom_listeners();
+		},
+
+		/**
+		 * Selects the previous LightDM user.
+		 */
+		select_previous_user: function() {
+			Private.set_current_user_index(Private.get_previous_user_index());
+			indicate_current_user_on_screen();
+		},
+
+		/**
+		 * Selects the next LightDM user.
+		 */
+		select_next_user: function() {
+			Private.set_current_user_index(Private.get_next_user_index());
+			indicate_current_user_on_screen();
+		},
+
+		/**
+		 * Returns the full name for the user with the given id, if available.
+		 * If a full name is not available, their real name will be used.
+		 * If there is no real name, their username will be used.
 		 *
-		 * @param The username of the user to start authenticating.
+		 * @param int user_index Index of the user in the LightDM user array.
+		 * @return string The full name for the user.
 		 */
-		window.start_authentication = function(username) {
-			lightdm.cancel_timed_login(); // Cancel any previous login attempt
-			lightdm.start_authentication(username);
-		};
+		get_full_name_from_index: function(user_index) {
+			var user = lightdm.users[user_index],
+				name;
 
-		/**
-		 * Provide the user-entered password to LightDM.
-		 */
-		window.provide_secret = function() {
-			// Pass the user-entered password to LightDM
-			lightdm.provide_secret(el_input_pass.value);
-		};
-
-		/**
-		 * Called when authentication of the user is complete.
-		 */
-		window.authentication_complete = function() {
-			if (lightdm.is_authenticated) {
-				// Log in if the user was successfully authenticated
-				lightdm.login(
-					lightdm.authentication_user,
-					lightdm.default_session
-				);
+			if (user.display_name) {
+				name = user.display_name;
+			} else if (user.real_name) {
+				name = user.real_name;
 			} else {
-				// Show an error message if authentication was not successful
-				show_error('Your password was incorrect');
-
-				// Reset the password field and remove the wait indicator
-				el_input_pass.value = '';
-				el_input_pass.focus();
-				hide_wait_indicator();
-
-				// Restart authentication for the current user
-				lightdm.start_authentication(lightdm.users[current_user_index]);
+				name = user.name;
 			}
-		};
+
+			return name;
+		},
 
 		/**
-		 * Called for LightDM to display errors.
+		 * Returns the path of the picture for the user with the given id.
+		 *
+		 * @param int user_index Index of the user in the LightDM user array.
 		 */
-		window.show_error = function() { /* do nothing */ };
+		get_picture_from_index: function(user_index) {
+			var picture;
+
+			if (lightdm.users[user_index].image) {
+				picture = lightdm.users[user_index].image;
+			} else {
+				picture = default_avatar;
+			}
+
+			return picture;
+		},
 
 		/**
-		 * Called for LightDM to display the login prompt.
+		 * Registers a callback for when a specific key is pressed.
+		 *
+		 * @param int key The keycode of the key to listen for.
+		 * @param function callback The function to call when the key is pressed.
 		 */
-		window.show_prompt = function() { /* do nothing */ };
-	}
+		register_keypress_handler: function(key, callback) {
+			if (keypress_handlers[key] === undefined) {
+				keypress_handlers[key] = [];
+			}
+
+			keypress_handlers[key].push(callback);
+		},
+
+
+
+		/**
+		 * Expose private methods for the purpose of testing.
+		 */
+		__test_framework__: Private,
+	};
 
 
 
