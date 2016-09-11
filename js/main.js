@@ -381,11 +381,11 @@ var Tendou = (function(lightdm) {
           );
         }
       }
-
-      // Select the first user in the list
-      Private.set_current_user_index(0);
-      indicate_current_user_on_screen();
     }
+
+    // Select the first user in the list
+    Private.set_current_user_index(0);
+    indicate_current_user_on_screen();
   }
 
 
