@@ -170,19 +170,24 @@ var Tendou = (function(lightdm) {
      * @param int user_index Index of the user in the LightDM user array.
      */
     set_current_user_index: function(user_index) {
-      var current_user_name = lightdm.users[user_index].name;
+      var current_user_name;
 
-      // Update the index of the current user globally
-      current_user_index = user_index;
-      
-      // Cancel authentication for a previous authentication attempt
-      if (lightdm._username) {
-        lightdm.cancel_authentication();
-      }
+      // Do nothing if there is no user at this index
+      if (user_index >= 0 && user_index < lightdm.num_users) {
+        current_user_name = lightdm.users[user_index].name;
 
-      // Start authentication for the new user
-      if (current_user_name !== null) {
-        window.start_authentication(current_user_name);
+        // Update the index of the current user globally
+        current_user_index = user_index;
+        
+        // Cancel authentication for a previous authentication attempt
+        if (lightdm._username) {
+          lightdm.cancel_authentication();
+        }
+
+        // Start authentication for the new user
+        if (current_user_name !== null) {
+          window.start_authentication(current_user_name);
+        }
       }
     },
   },
