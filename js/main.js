@@ -9,7 +9,7 @@ var Tendou = (function(lightdm) {
    *
    */
 
-  var el_form_login_form = null, // Login form
+  var el_form_login_form   = null, // Login form
       el_input_user        = null, // User input field
       el_input_pass        = null, // Password input field
       el_list_user_list    = null, // List of users
@@ -325,7 +325,8 @@ var Tendou = (function(lightdm) {
     /* Updates the user list when the currently selected user changes. */
     el_input_user.addEventListener('change', function(e) {
       e.preventDefault();
-      indicate_current_user_on_screen(e.currentTarget.selectedIndex);
+      Private.set_current_user_index(e.currentTarget.selectedIndex);
+      indicate_current_user_on_screen();
     });
 
     /* Authenticates with LightDM when the login form is submitted. */
