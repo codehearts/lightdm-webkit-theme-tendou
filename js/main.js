@@ -218,16 +218,24 @@ var Tendou = (function(lightdm) {
      * Selects the previous LightDM user.
      */
     select_previous_user: function() {
-      Private.set_current_user_index(Private.get_previous_user_index());
-      indicate_current_user_on_screen();
+      var previous_user_index = Private.get_previous_user_index();
+
+      if (previous_user_index !== Private.get_current_user_index()) {
+        Private.set_current_user_index(previous_user_index);
+        indicate_current_user_on_screen();
+      }
     },
 
     /**
      * Selects the next LightDM user.
      */
     select_next_user: function() {
-      Private.set_current_user_index(Private.get_next_user_index());
-      indicate_current_user_on_screen();
+      var next_user_index = Private.get_next_user_index();
+
+      if (next_user_index !== Private.get_current_user_index()) {
+        Private.set_current_user_index(next_user_index);
+        indicate_current_user_on_screen();
+      }
     },
 
     /**
