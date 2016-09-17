@@ -75,7 +75,7 @@ var Tendou = (function(lightdm) {
           hide_wait_indicator();
 
           // Restart authentication for the current user
-          lightdm.start_authentication(lightdm.users[current_user_index]);
+          lightdm.start_authentication(lightdm.users[current_user_index].name);
         }
       };
 
