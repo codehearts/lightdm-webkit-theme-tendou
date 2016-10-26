@@ -11,7 +11,6 @@ var Tendou = (function(lightdm) {
 
   var el_form_login_form   = null, // Login form
       el_input_user        = null, // User input field
-      el_input_pass        = null, // Password input field
       el_list_user_list    = null, // List of users
       el_text_message      = null, // Messages to display to the user
       el_heading_full_name = null, // Heading for the current user's full name
@@ -24,6 +23,12 @@ var Tendou = (function(lightdm) {
       keypress_handlers    = {},   // Registered keypress callbacks
       default_avatar       = 'images/default-avatar.png',
 
+
+
+  PrivateProp = {
+    el_input_pass: null, // Password input field
+  },
+  
 
 
   /*
@@ -52,7 +57,7 @@ var Tendou = (function(lightdm) {
        */
       window.provide_secret = function() {
         // Pass the user-entered password to LightDM
-        lightdm.provide_secret(el_input_pass.value);
+        lightdm.provide_secret(PrivateProp.el_input_pass.value);
       };
 
       /**
@@ -67,11 +72,11 @@ var Tendou = (function(lightdm) {
           );
         } else {
           // Show an error message if authentication was not successful
-          show_error('Your password was incorrect');
+          window.show_error('Your password was incorrect');
 
           // Reset the password field and remove the wait indicator
-          el_input_pass.value = '';
-          el_input_pass.focus();
+          PrivateProp.el_input_pass.value = '';
+          PrivateProp.el_input_pass.focus();
           hide_wait_indicator();
 
           // Restart authentication for the current user
@@ -80,9 +85,14 @@ var Tendou = (function(lightdm) {
       };
 
       /**
-       * Called for LightDM to display errors.
+       * Displays the given error message to the user.
+       *
+       * @param string text The error message to display.
        */
-      window.show_error = function() { /* do nothing */ };
+      window.show_error = function(text) {
+        show_message(text);
+        el_text_message.classList.add('error');
+      };
 
       /**
        * Called for LightDM to display the login prompt.
@@ -298,6 +308,7 @@ var Tendou = (function(lightdm) {
      * Expose private methods for the purpose of testing.
      */
     __test_framework__: Private,
+    __test_framework_properties__: PrivateProp,
   };
 
 
@@ -311,7 +322,7 @@ var Tendou = (function(lightdm) {
   function init_dom_elements() {
     el_form_login_form   = document.getElementById('login-form');
     el_input_user        = document.getElementById('user');
-    el_input_pass        = document.getElementById('password');
+    PrivateProp.el_input_pass = document.getElementById('password');
     el_list_user_list    = document.getElementById('user-list');
     el_text_message      = document.getElementById('message');
     el_heading_full_name = document.getElementById('login-name');
@@ -411,17 +422,6 @@ var Tendou = (function(lightdm) {
     el_text_message.innerHTML= text;
     el_text_message.classList.remove('cleared');
     el_text_message.classList.remove('error');
-  }
-
-
-  /**
-   * Displays the given error message to the user.
-   *
-   * @param string text The error message to display.
-   */
-  function show_error(text) {
-    show_message(text);
-    el_text_message.classList.add('error');
   }
 
 
