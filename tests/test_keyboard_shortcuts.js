@@ -2,12 +2,15 @@
 /* global Tendou, sinon, assert, after, beforeEach */
 describe('Tendou', function() {
   describe('__test_framework__', function() {
-    var __Tendou__ = Tendou.__test_framework__;
+    var tendou, __Tendou__;
+    
+    tendou = new Tendou();
+    __Tendou__ = tendou.__test_framework__;
 
     describe('init_keypress_handler()', function() {
       it('should register all keybindings', function() {
-        var registration_stub = sinon.stub(Tendou, 'register_keypress_handler');
-        Tendou.__test_framework__.init_keypress_handler();
+        var registration_stub = sinon.stub(tendou, 'register_keypress_handler');
+        __Tendou__.init_keypress_handler();
 
         assert.equal(
           window.onkeydown, __Tendou__.keypress_event_translator,
@@ -15,12 +18,12 @@ describe('Tendou', function() {
         );
 
         assert.isTrue(
-          registration_stub.calledWithExactly(40, Tendou.select_next_user),
+          registration_stub.calledWithExactly(40, tendou.select_next_user),
           'select_next_user keybinding was not registered'
         );
 
         assert.isTrue(
-          registration_stub.calledWithExactly(38, Tendou.select_previous_user),
+          registration_stub.calledWithExactly(38, tendou.select_previous_user),
           'select_previous_user keybinding was not registered'
         );
       });
@@ -75,9 +78,9 @@ describe('Tendou', function() {
       var handler_spy_2 = sinon.spy();
       var handler_spy_3 = sinon.spy();
 
-      Tendou.register_keypress_handler(0, handler_spy_1);
-      Tendou.register_keypress_handler(0, handler_spy_2);
-      Tendou.register_keypress_handler(1, handler_spy_3);
+      tendou.register_keypress_handler(0, handler_spy_1);
+      tendou.register_keypress_handler(0, handler_spy_2);
+      tendou.register_keypress_handler(1, handler_spy_3);
 
       beforeEach(function() {
         handler_spy_1.reset();

@@ -1,8 +1,11 @@
 /* jshint mocha: true */
 /* global Tendou, sinon, assert, beforeEach */
 describe('Tendou', function() {
-  var __Tendou__ = Tendou.__test_framework__;
-  var __Tendou_prop__ = Tendou.__test_framework_properties__;
+  var tendou, __Tendou__, __Tendou_prop__;
+
+  tendou = new Tendou();
+  __Tendou__ = tendou.__test_framework__;
+  __Tendou_prop__ = tendou.__test_framework_properties__;
 
   describe('LightDM authentication', function() {
     var fakes;
