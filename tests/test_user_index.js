@@ -2,9 +2,12 @@
 /* global Tendou, assert, after, before */
 describe('Tendou', function() {
   describe('__test_framework__', function() {
-    var __Tendou__ = Tendou.__test_framework__;
+    var tendou, __Tendou__;
 
     before(function() {
+      tendou = new Tendou();
+      __Tendou__ = tendou.__test_framework__;
+
       // Initialize the LightDM handlers before running these tests
       __Tendou__.init_lightdm_handlers();
     });
