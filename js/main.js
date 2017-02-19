@@ -1,6 +1,6 @@
 /* exported Tendou */
 /* jshint latedef: false */
-var Tendou = (function(lightdm) {
+function Tendou() {
   'use strict';
 
   /*
@@ -9,10 +9,13 @@ var Tendou = (function(lightdm) {
    *
    */
 
+  var self = this;
+  this._el_text_message    = null; // Messages to display to the user
+  this._el_wait_indicator  = null; // Displayed when the user must wait
+
   var el_form_login_form   = null, // Login form
       el_input_user        = null, // User input field
       el_list_user_list    = null, // List of users
-      el_text_message      = null, // Messages to display to the user
       el_heading_full_name = null, // Heading for the current user's full name
       el_figure_profile    = null, // Container for the current user's picture
       el_img_profile       = null, // Container for the current user's picture
@@ -77,7 +80,7 @@ var Tendou = (function(lightdm) {
           // Reset the password field and remove the wait indicator
           PrivateProp.el_input_pass.value = '';
           PrivateProp.el_input_pass.focus();
-          hide_wait_indicator();
+          self._hide_wait_indicator();
 
           // Restart authentication for the current user
           lightdm.start_authentication(lightdm.users[current_user_index].name);
@@ -91,7 +94,7 @@ var Tendou = (function(lightdm) {
        */
       window.show_error = function(text) {
         show_message(text);
-        el_text_message.classList.add('error');
+        self._el_text_message.classList.add('error');
       };
 
       /**
@@ -309,6 +312,15 @@ var Tendou = (function(lightdm) {
      */
     __test_framework__: Private,
     __test_framework_properties__: PrivateProp,
+
+    /**
+     * Expose prototype functions until the code is converted to use _ for privates
+    */
+
+    _el_text_message:     this._el_text_message,
+    _el_wait_indicator:   this._el_wait_indicator,
+    _show_wait_indicator: Tendou.prototype._show_wait_indicator,
+    _hide_wait_indicator: Tendou.prototype._hide_wait_indicator,
   };
 
 
@@ -324,7 +336,7 @@ var Tendou = (function(lightdm) {
     el_input_user        = document.getElementById('user');
     PrivateProp.el_input_pass = document.getElementById('password');
     el_list_user_list    = document.getElementById('user-list');
-    el_text_message      = document.getElementById('message');
+    self._el_text_message      = document.getElementById('message');
     el_heading_full_name = document.getElementById('login-name');
     el_figure_profile    = document.getElementById('profile-image');
     el_img_profile       = el_figure_profile.querySelector('img');
@@ -359,7 +371,7 @@ var Tendou = (function(lightdm) {
 
       // Clear all messages and display the waiting indicator
       clear_message();
-      show_wait_indicator();
+      self._show_wait_indicator();
 
       window.provide_secret();
     });
@@ -419,9 +431,9 @@ var Tendou = (function(lightdm) {
    * @param string text The message to display.
    */
   function show_message(text) {
-    el_text_message.innerHTML= text;
-    el_text_message.classList.remove('cleared');
-    el_text_message.classList.remove('error');
+    self._el_text_message.innerHTML= text;
+    self._el_text_message.classList.remove('cleared');
+    self._el_text_message.classList.remove('error');
   }
 
 
@@ -430,30 +442,7 @@ var Tendou = (function(lightdm) {
    */
   function clear_message() {
     show_message('');
-    el_text_message.classList.add('cleared');
-  }
-
-
-  /**
-   * Displays the wait indicator to the user.
-   */
-  function show_wait_indicator() {
-    el_text_message.insertAdjacentHTML(
-      'afterend',
-      '<div class="spinner"></div>'
-    );
-  }
-
-
-  /**
-   * Removes the wait indicator.
-   */
-  function hide_wait_indicator() {
-    var spinners = document.getElementsByClassName('spinner');
-
-    while (spinners[0]) {
-      spinners[0].parentNode.removeChild(spinners[0]);
-    }
+    self._el_text_message.classList.add('cleared');
   }
 
 
@@ -518,11 +507,39 @@ var Tendou = (function(lightdm) {
 
     // Clear all messages and the wait indicator
     clear_message();
-    hide_wait_indicator();
+    self._hide_wait_indicator();
   }
 
 
 
   // Expose the public interface
   return Public;
-} (lightdm));
+};
+
+
+/**
+ * Displays the wait indicator to the user.
+ * Only one wait indicator is displayed at a time.
+ */
+Tendou.prototype._show_wait_indicator = function() {
+  if (null === this._el_wait_indicator) {
+    this._el_wait_indicator = document.createElement('div');
+    this._el_wait_indicator.className = 'spinner';
+
+    this._el_text_message.insertAdjacentElement(
+      'afterend',
+      this._el_wait_indicator
+    );
+  }
+}
+
+
+/**
+ * Removes the wait indicator.
+ */
+Tendou.prototype._hide_wait_indicator = function() {
+  if (null !== this._el_wait_indicator) {
+    this._el_wait_indicator.remove();
+    this._el_wait_indicator = null;
+  }
+}
