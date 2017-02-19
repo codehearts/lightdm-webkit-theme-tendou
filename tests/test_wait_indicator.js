@@ -1,7 +1,8 @@
 /* jshint mocha: true */
 /* global Tendou, sinon, assert */
 describe('wait indicator', function() {
-  var tendou, sandbox, createElement_stub, insertAdjacentElement_spy, remove_spy;
+  var tendou, sandbox,
+      createElement_stub, insertAdjacentElement_spy, remove_spy;
 
   sandbox = sinon.sandbox.create();
 
@@ -18,7 +19,7 @@ describe('wait indicator', function() {
     });
 
     // Spy on the insertAdjacentElement call
-    insertAdjacentElement_spy = sandbox.spy()
+    insertAdjacentElement_spy = sandbox.spy();
     tendou._el_text_message = {
       insertAdjacentElement: insertAdjacentElement_spy,
     };
