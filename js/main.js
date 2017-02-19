@@ -314,8 +314,10 @@ function Tendou() {
     __test_framework_properties__: PrivateProp,
 
     /**
-     * Expose prototype functions until the code is converted to use _ for privates
-    */
+     * Add function prototype here, because Tendou returns
+     * an object other than `this`. Should be refactored
+     * to not return a new object.
+     */
 
     _el_text_message:     this._el_text_message,
     _el_wait_indicator:   this._el_wait_indicator,
@@ -514,7 +516,7 @@ function Tendou() {
 
   // Expose the public interface
   return Public;
-};
+}
 
 
 /**
@@ -531,7 +533,7 @@ Tendou.prototype._show_wait_indicator = function() {
       this._el_wait_indicator
     );
   }
-}
+};
 
 
 /**
@@ -542,4 +544,4 @@ Tendou.prototype._hide_wait_indicator = function() {
     this._el_wait_indicator.remove();
     this._el_wait_indicator = null;
   }
-}
+};
