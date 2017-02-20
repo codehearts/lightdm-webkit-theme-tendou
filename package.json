@@ -1,33 +1,36 @@
 {
   "name": "lightdm-webkit-theme-tendou",
-  "version": "0.0.1",
-  "description": "LightDM Webkit theme Tendou  frontend",
+  "version": "0.0.2",
+  "description": "LightDM WebKit theme Tendou",
   "license": "GPL-3.0",
   "repository": "codehearts/lightdm-webkit-theme-tendou",
-  "bugs": { "url" : "http://github.com/codehearts/lightdm-webkit-theme-tendou/issues"
+  "bugs": {
+    "url" : "http://github.com/codehearts/lightdm-webkit-theme-tendou/issues"
   },
   "author": {
     "name": "Kate Hart",
     "email": "kejt.hart@gmail.com"
   },
   "engines": {
-    "node": ">=0.10.0"
+    "node": "7.5.0"
   },
   "scripts": {
     "test": "./node_modules/karma/bin/karma start karma.conf.js --single-run"
   },
   "devDependencies": {
-    "istanbul": "^0.4.5",
-    "karma": "^1.2.0",
-    "karma-coverage": "^1.1.1",
-    "karma-mocha": "^1.1.1",
-    "karma-mocha-reporter": "^2.1.0",
-    "karma-phantomjs-launcher": "^1.0.2",
-    "karma-sinon-chai": "^1.2.3",
-    "mocha": "^3.0.2",
-    "phantomjs-prebuilt": "^2.1.12",
-    "sinon": "^1.17.5",
-    "sinon-chai": "^2.8.0",
-    "jshint": "^2.9.3"
+	"karma-jshint-preprocessor": "0.0.6",
+    "karma-phantomjs-launcher": "1.0.2",
+    "karma-mocha-reporter": "2.2.2",
+    "phantomjs-prebuilt": "2.1.14",
+    "karma-sinon-chai": "1.2.4",
+    "karma-coverage": "1.1.1",
+    "karma-mocha": "1.3.0",
+    "sinon-chai": "2.8.0",
+    "istanbul": "0.4.5",
+    "jshint": "2.9.4",
+    "sinon": "1.17.7",
+    "karma": "1.4.1",
+    "mocha": "3.2.0",
+	"chai": "3.5.0"
   }
 }
