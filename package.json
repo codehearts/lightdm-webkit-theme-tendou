@@ -15,7 +15,8 @@
     "node": "7.5.0"
   },
   "scripts": {
-    "test": "./node_modules/karma/bin/karma start karma.conf.js --single-run"
+    "pretest": "mkdir -p ./node_modules # Avoid warning for package.json without node_modules/",
+    "test": "/node/node_modules/karma/bin/karma start karma.conf.js --single-run"
   },
   "devDependencies": {
 	"karma-jshint-preprocessor": "0.0.6",
