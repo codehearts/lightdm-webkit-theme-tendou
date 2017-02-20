@@ -1,23 +1,21 @@
-language: node_js
-node_js:
-  - '0.10'
-cache:
-  directories:
-    - node_modules
+sudo: required
+
+language: c
+
+services:
+  - docker
+
 deploy:
   provider: releases
   api_key:
     secure: BBlNiFerq6U7o0FOVIjSgxveIQMVBpQyIEFsO+9UFCa4F75GVVRIXwentKPbIOPNKmAzi8d1SlYixnuh8tD6rKmyrkPzMbBbvL3wdzDcAeNsWbqz3Rp1kKTv6jMKYV/tH4XGYzE0ACRfP23Vn49obI69SDSk+RzIdsTsikZrk9TuB6X+W3c3zxyk9Gf4WS13a6s88pI0GEOOkcD9zyAyGujCOZeJSuu1Zmlk+wcdibqn7VvNc+Szclpv8GoEHr6MnEHMJeYCL9IxOHllBiKoHSViIgVtVyS3mFTc7MuGRHkmmcPAllv1njgOln537CFUvAvO8QgZg/M9qUwpiu8EzZcDUxrLjh8SGCscp2/JpXbIa5WXiHRnuBz7rWWmloSwV8PBcq5XLTw6970F2o+d1uBw41HACCpTWkW67Knffq8V1Vz411W490UI8U8WFVbIV0UjAmxMe8ZGPYvpzOs3BeGvCUdiikh/lEcOUBapg8cETewvSuJEeSCS5uW8AXhP1JDUjYQV59Vr+hlSQwhqG7Q5I6lqnlj5Ju1LJGwrmO0ZTjjohjyP0zeGIJux142hmrsBrTwDkaGpKDVqkxiZHUiAyZVVoci1x4omCrRwLqYSX/1ZWFfK/pQvDKl4ZCOtZLA+2XiKmAVvlQU2MDD5taAG6xTVKfp7FgZhe/ObLRk=
-  skip_cleanup: true
-  file_glob: true
-  file:
-    - index.html
-    - js/main.js
-    - css/main.css
-    - images/*
   on:
     repo: codehearts/lightdm-webkit-theme-tendou
     branch: master
     tags: true
-after_script:
+
+script:
+  - make test
+
+after_success:
   - bash <(curl -s https://codecov.io/bash)

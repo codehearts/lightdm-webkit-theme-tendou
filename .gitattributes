@@ -1,0 +1,8 @@
+Dockerfile export-ignore
+Makefile   export-ignore
+tests/     export-ignore
+js/mock/   export-ignore
+/*.json    export-ignore
+/*.png     export-ignore
+/*.js      export-ignore
+/.*        export-ignore
