@@ -14,7 +14,7 @@ module.exports = function (config) {
       // source files, that you wanna generate coverage for
       // do not include tests or libraries
       // (these files will be instrumented by Istanbul)
-      'js/*.js': ['coverage']
+      'js/*.js': ['jshint', 'coverage']
     },
 
     // list of files / patterns to load in the browser
@@ -32,18 +32,23 @@ module.exports = function (config) {
     // lcov creates a codecov compatible report
     coverageReporter: {
       reporters: [
-		// generates ./coverage/lcov.info
-		{type:'lcovonly', subdir: '.'},
-		// generates ./coverage/coverage-final.json
-		{type:'json', subdir: '.'},
+        // generates ./coverage/lcov.info
+        {type:'lcovonly', subdir: '.'},
+        // generates ./coverage/coverage-final.json
+        {type:'json', subdir: '.'},
       ]
+    },
+
+    jshintPreprocessor: {
+      jshintrc: './.jshintrc',
+      stopOnError: true
     },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     // coverage is from karma-coverage and provides Istanbul coverage reports
-    reporters: ['progress', 'mocha', 'coverage'],
+    reporters: ['mocha', 'coverage'],
 
     // web server port
     port: 9876,
@@ -53,12 +58,12 @@ module.exports = function (config) {
 
     // level of logging
     // possible values:
-	// config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN ||
-	//   config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_INFO,
+    // config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN ||
+    //   config.LOG_INFO || config.LOG_DEBUG
+    logLevel: config.LOG_WARN,
 
     // start these browsers. available browser launchers:
-	// https://npmjs.org/browse/keyword/karma-launcher
+    // https://npmjs.org/browse/keyword/karma-launcher
     browsers: ['PhantomJS'],
 
     // Continuous Integration mode
