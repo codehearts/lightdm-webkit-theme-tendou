@@ -54,8 +54,14 @@ Suggestions are made through this project's [issues page](https://github.com/cod
 
 ## Testing
 
+The build environment is provided as a Docker container tagged `codehearts/lightdm-webkit-theme-tendou`
+
 - Run `make test` from anywhere in the project repo (requires [Docker](https://www.docker.com))
 - Run a basic test on `index.html` in a WebKit-based browser and Firefox (to ensure the online demo functions)
+- If you need to build the Docker container
+  - Run `make docker_build` to rebuild the container
+  - Run `make docker_push` to push the container to Docker Hub
+  - Add `DOCKER_TAG=<your tag>` after the `make` command to change the Docker tag (`make docker_build DOCKER_TAG=local-tendou`)
 
 ### Writing Tests for JavaScript
 
